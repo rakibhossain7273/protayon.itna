@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <title>ডিজিটাল কৃষি প্রত্যয়ন - ইটনা উপজেলা</title>
+    <style>
+        @import url('https://fonts.cdnfonts.com/css/solaimanlipi');
+        :root { 
+            --border-dark: #000000; 
+            --primary-green: #006a4e; 
+            --navy: #000080; 
+        }
+        
+        body { font-family: 'SolaimanLipi', Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
+        
+        #pad { 
+            display: none; width: 210mm; min-height: 297mm; 
+            margin: 0 auto; padding: 10mm 12mm; 
+            border: 8px double var(--border-dark); 
+            background: #fff !important; 
+            position: relative; box-sizing: border-box; color: #000;
+        }
+        
+        .watermark { 
+            position: absolute; top: 50%; left: 50%; 
+            transform: translate(-50%, -50%); 
+            width: 480px; opacity: 0.08; 
+            z-index: 0; pointer-events: none;
+        }
+        
+        .header-top { display: grid; grid-template-columns: 100px 1fr 120px; align-items: center; text-align: center; position: relative; z-index: 1; }
+        .qr-top { width: 70px; height: 70px; }
+        .govt-seal img { width: 50px; }
+        .govt-seal h2 { font-size: 16px; margin: 2px 0; }
+        .union-logo { width: 85px; height: 85px; object-fit: contain; margin-left: auto; }
+
+        .header-main { text-align: center; border-bottom: 2px solid var(--primary-green); padding-bottom: 5px; margin-bottom: 10px; position: relative; z-index: 1; }
+        .header-main h1 { color: var(--navy); margin: 5px 0; font-size: 26px; }
+        .header-main p { margin: 2px 0; font-weight: bold; font-size: 14px; }
+
+        .meta-info { display: flex; justify-content: space-between; margin: 10px 0; font-weight: bold; font-size: 13px; }
+        
+        .cert-title { text-align: center; margin: 10px auto; border: 2px solid var(--border-dark); width: fit-content; padding: 3px 50px; border-radius: 20px; font-size: 20px; font-weight: bold; color: var(--navy); background: #f9f9f9; }
+
+        .content-area { position: relative; z-index: 1; width: 90%; margin: 0 auto; }
+        
+        .info-section { margin-left: 10%; width: 90%; margin-top: 20px; }
+        .sub-title { font-weight: bold; font-size: 16px; margin-bottom: 10px; text-decoration: underline; }
+        
+        .info-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+        .info-table tr { border-bottom: 1px dotted #ccc; }
+        .info-table td { padding: 5px; font-size: 15px; line-height: 1.4; }
+        .label-cell { width: 35%; font-weight: bold; }
+        .sep-cell { width: 5%; text-align: center; }
+        .val-cell { width: 60%; }
+
+        .desc-text { text-align: justify; line-height: 1.8; font-size: 16px; margin-top: 30px; text-indent: 50px; }
+        .wishing { text-align: center; margin-top: 40px; font-weight: bold; font-size: 15px; border-top: 1px solid #eee; padding-top: 10px; }
+
+        .signature-area { margin-top: 80px; display: flex; justify-content: flex-end; padding-right: 30px; position: relative; z-index: 1; }
+        .sig-block { text-align: center; font-size: 14px; border-top: 1px solid #000; width: 220px; padding-top: 5px; }
+
+        .qr-bottom-area { text-align: center; margin-top: 40px; position: relative; z-index: 1; }
+        .qr-bottom-area img { width: 80px; height: 80px; }
+
+        /* Form Styles */
+        .no-print { max-width: 900px; margin: 20px auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .full-width { grid-column: span 3; }
+        .input-group { display: flex; flex-direction: column; margin-bottom: 10px; }
+        label { font-weight: bold; font-size: 13px; margin-bottom: 4px; color: #444; }
+        input, select { padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+        button.main-btn { background: var(--primary-green); color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 16px; margin-top: 20px; transition: 0.3s; }
+        button.main-btn:hover { background: #004d38; }
+        
+        @media print {
+            .no-print, #printTools { display: none !important; }
+            #pad { display: block !important; margin: 0; width: 100%; border: 8px double #000 !important; }
+            body { background: white; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <h2 style="text-align:center; color: var(--primary-green);">🚜 ডিজিটাল কৃষি প্রত্যয়ন জেনারেটর</h2>
+    <div class="grid-3">
+        <div class="input-group">
+            <label>ইউনিয়ন পরিষদ:</label>
+            <select id="unionSelect" onchange="updateAddr()">
+                <option value="">সিলেক্ট করুন</option>
+                <option value="১নং রায়টুটী|মোহাম্মদ এনামূল হক খান মিল্কী|রায়টুটী-২৩৯০|https://i.postimg.cc/SKR3qHLn/Untitled-6-copy-6.jpg">১নং রায়টুটী</option>
+                <option value="২নং ধনপুর|প্রদীপ কুমার দাস|ধনপুর-২৩৯০|https://i.postimg.cc/Pq7cqKKr/Untitled-6-copy-4.jpg">২নং ধনপুর</option>
+                <option value="৩নং মৃগা|মোঃ দারুল ইসলাম|মৃগা-২৩৯০|https://i.postimg.cc/VNhTN44N/Untitled-6-copy-3.jpg">৩নং মৃগা</option>
+                <option value="৪নং ইটনা|মোঃ সোহাগ মিয়া|ইটনা-২৩৯০|https://i.postimg.cc/pdS7dkkT/itana-i'una-ya-na-para-sada.jpg">৪নং ইটনা</option>
+                <option value="৫নং বড়িবাড়ি|আঃ ছাত্তার|বাদলা-২৩১০|https://i.postimg.cc/7LhdDj1G/Untitled-6-copy-8.jpg">৫নং বড়িবাড়ি</option>
+                <option value="৬নং বাদলা|আদিলুজ্জামান ভূঞা|বাদলা-২৩১০|https://i.postimg.cc/k5Gz9LNB/Untitled-6-copy-9.jpg">৬নং বাদলা</option>
+                <option value="৭নং এলংজুরী|রুবেল মিয়া|এলংজুরী-২৩৯০|https://i.postimg.cc/KYjwFC7K/Untitled-6-copy-5.jpg">৭নং এলংজুরী</option>
+                <option value="৮নং জয়সিদ্ধি|মোঃ মনির উদ্দিন|জয়সিদ্ধি-২৩৯০|https://i.postimg.cc/hGGvn43G/Untitled-6-copy.jpg">৮নং জয়সিদ্ধি</option>
+                <option value="৯নং চৌগাংগা|সাইফুল ইসলাম|চৌগাংগা-২৩৯০|https://i.postimg.cc/0N43NZZ9/Untitled-6-copy-7.jpg">৯নং চৌগাংগা</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>লিঙ্গ:</label>
+            <select id="genderSelect">
+                <option value="পুরুষ">পুরুষ (কৃষক)</option>
+                <option value="নারী">নারী (কৃষাণী)</option>
+            </select>
+        </div>
+        <div class="input-group"><label>ওয়ার্ড নং:</label><select id="wardIn" onchange="updateAddr()"><option value="১">১</option><option value="২">২</option><option value="৩">৩</option><option value="৪">৪</option><option value="৫">৫</option><option value="৬">৬</option><option value="৭">৭</option><option value="৮">৮</option><option value="৯">৯</option></select></div>
+
+        <div class="input-group"><label>কৃষক/কৃষাণীর নাম:</label><input type="text" id="p_name"></div>
+        <div class="input-group"><label>পিতা/স্বামীর নাম:</label><input type="text" id="p_father"></div>
+        <div class="input-group"><label>মাতার নাম:</label><input type="text" id="p_mother"></div>
+        
+        <div class="input-group"><label>গ্রাম:</label><input type="text" id="villageIn" placeholder="গ্রামের নাম" onkeyup="updateAddr()"></div>
+        <div class="input-group"><label>NID/জন্ম সনদ নং:</label><input type="text" id="p_id"></div>
+        <div class="input-group"><label>কৃষি কার্ড নং (যদি থাকে):</label><input type="text" id="p_agri_card" placeholder="ঐচ্ছিক"></div>
+
+        <div class="input-group full-width"><label>বর্তমান ঠিকানা:</label><input type="text" id="presAddr"></div>
+        <div class="input-group full-width"><label>স্থায়ী ঠিকানা:</label><input type="text" id="permAddr"></div>
+    </div>
+    <button class="main-btn" onclick="generate()">কৃষি প্রত্যয়ন জেনারেট করুন</button>
+</div>
+
+<div id="pad">
+    <img src="https://images.seeklogo.com/logo-png/40/1/bangladesh-govt-republic-of-bangladesh-logo-png_seeklogo-406974.png" class="watermark">
+    
+    <div class="header-top">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=verified" class="qr-top">
+        <div class="govt-seal">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/8/84/Government_Seal_of_Bangladesh.svg">
+            <h2>গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</h2>
+        </div>
+        <img id="p_union_logo" class="union-logo">
+    </div>
+
+    <div class="header-main">
+        <h1 id="p_union_title"></h1>
+        <p>উপজেলা: ইটনা, জেলা: কিশোরগঞ্জ।</p>
+    </div>
+
+    <div class="meta-info">
+        <div>স্মারক নং: <span id="p_sarok"></span></div>
+        <div>তারিখ: <span id="p_today"></span></div>
+    </div>
+
+    <div class="cert-title">কৃষি প্রত্যয়ন পত্র</div>
+
+    <div class="content-area">
+        <div class="info-section">
+            <div class="sub-title">কৃষক/কৃষাণীর বিবরণ:</div>
+            <table class="info-table">
+                <tr><td class="label-cell">নাম</td><td class="sep-cell">:</td><td class="val-cell" id="d_name"></td></tr>
+                <tr><td class="label-cell" id="lbl_father">পিতা/স্বামীর নাম</td><td class="sep-cell">:</td><td class="val-cell" id="d_father"></td></tr>
+                <tr><td class="label-cell">মাতার নাম</td><td class="sep-cell">:</td><td class="val-cell" id="d_mother"></td></tr>
+                <tr><td class="label-cell">NID / জন্ম নিবন্ধন নং</td><td class="sep-cell">:</td><td class="val-cell" id="d_id"></td></tr>
+                <tr id="row_agri_card"><td class="label-cell">কৃষি কার্ড নং</td><td class="sep-cell">:</td><td class="val-cell" id="d_agri_card"></td></tr>
+                <tr><td class="label-cell">ঠিকানা</td><td class="sep-cell">:</td><td class="val-cell" id="d_pres"></td></tr>
+            </table>
+        </div>
+
+        <div class="desc-text" id="p_desc"></div>
+        <div class="wishing">"আমি তাঁর উজ্জ্বল ভবিষ্যৎ ও উত্তরোত্তর সমৃদ্ধি কামনা করি।"</div>
+
+        <div class="signature-area">
+            <div class="sig-block">
+                <b><span id="p_chairman"></span></b><br>
+                চেয়ারম্যান<br>
+                <span id="p_union_footer"></span><br>
+                ইটনা, কিশোরগঞ্জ।
+            </div>
+        </div>
+    </div>
+
+    <div class="qr-bottom-area">
+        <img id="p_qr_main" src="">
+    </div>
+</div>
+
+<div id="printTools" style="display:none; text-align:center; margin-bottom: 50px;">
+    <button onclick="window.print()" style="padding:12px 40px; background:#1a73e8; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">🖨️ প্রিন্ট করুন</button>
+</div>
+
+<script>
+    function toBnNum(n) {
+        if(!n) return "---";
+        const bn = {'0':'০','1':'১','2':'২','3':'৩','4':'৪','5':'৫','6':'৬','7':'৭','8':'৮','9':'৯'};
+        return n.toString().replace(/[0-9]/g, s => bn[s]);
+    }
+
+    function updateAddr() {
+        const val = document.getElementById('unionSelect').value.split('|');
+        if(val.length > 1) {
+            const village = document.getElementById('villageIn').value || "...";
+            const ward = document.getElementById('wardIn').value;
+            const addr = `গ্রাম: ${village}, ওয়ার্ড নং: ${toBnNum(ward)}, ডাকঘর: ${val[2]}, থানা: ইটনা, জেলা: কিশোরগঞ্জ।`;
+            document.getElementById('presAddr').value = addr;
+            document.getElementById('permAddr').value = addr;
+        }
+    }
+
+    function generate() {
+        const val = document.getElementById('unionSelect').value.split('|');
+        if(!val[0]) { alert("ইউনিয়ন সিলেক্ট করুন"); return; }
+        
+        const name = document.getElementById('p_name').value;
+        const father = document.getElementById('p_father').value;
+        const mother = document.getElementById('p_mother').value;
+        const gender = document.getElementById('genderSelect').value;
+        const agriCard = document.getElementById('p_agri_card').value;
+        
+        const typeStr = (gender === "নারী") ? "কৃষাণী" : "কৃষক";
+        const uName = val[0] + " ইউনিয়ন পরিষদ";
+        
+        // Populate fields
+        document.getElementById('d_name').innerText = name;
+        document.getElementById('d_father').innerText = father;
+        document.getElementById('d_mother').innerText = mother;
+        document.getElementById('d_id').innerText = toBnNum(document.getElementById('p_id').value);
+        document.getElementById('d_agri_card').innerText = toBnNum(agriCard);
+        document.getElementById('d_pres').innerText = document.getElementById('presAddr').value;
+        
+        // Description Logic
+        document.getElementById('p_desc').innerHTML = `এই মর্মে প্রত্যয়ন করা যাচ্ছে যে, <b>${name}</b>, পিতা/স্বামী: <b>${father}</b>, মাতা: <b>${mother}</b> অত্র ইউনিয়নের একজন স্থায়ী বাসিন্দা। তিনি পেশায় একজন প্রকৃত <b>${typeStr}</b>। তিনি অত্র এলাকার কৃষি কার্যক্রমের সাথে সরাসরি জড়িত এবং কৃষি উন্নয়নে সক্রিয় ভূমিকা পালন করে আসছেন। আমার জানামতে তিনি জন্মসূত্রে বাংলাদেশের একজন সুনাগরিক এবং কোনো প্রকার রাষ্ট্রবিরোধী কর্মকাণ্ডে জড়িত নন।`;
+        
+        document.getElementById('p_union_title').innerText = uName + " কার্যালয়";
+        document.getElementById('p_union_footer').innerText = uName;
+        document.getElementById('p_chairman').innerText = val[1];
+        document.getElementById('p_union_logo').src = val[3];
+        document.getElementById('p_sarok').innerText = toBnNum("কৃষি-" + Math.floor(100 + Math.random() * 900) + "/২০২৪");
+        document.getElementById('p_today').innerText = toBnNum(new Date().toLocaleDateString('en-GB'));
+        
+        const qrData = encodeURIComponent(`কৃষি প্রত্যয়ন: ${uName}। নাম: ${name}, পেশা: ${typeStr}`);
+        document.getElementById('p_qr_main').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrData}`;
+        
+        document.querySelector('.no-print').style.display = 'none';
+        document.getElementById('pad').style.display = 'block';
+        document.getElementById('printTools').style.display = 'block';
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        h1 {
+            color: rgb(57, 245, 183);
+            font-size: 80px;
+        }
+
+        /* বাটনের মেইন স্টাইল */
+        .home-btn {
+            color: white;
+            background-color: brown;
+            font-size: 20px;
+            font-weight: 500; /* হালকা বোল্ড */
+            padding: 14px 70px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-block; /* মাঝখানে রাখার জন্য সাহায্য করে */
+            transition: all 0.3s ease; /* নড়াচড়া মসৃণ করার জন্য */
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+        }
+
+        /* কারসর নিলে যা হবে (Hover Effect) */
+        .home-btn:hover {
+            transform: translateY(-5px); /* হালকা উপরে উঠবে */
+            background:-o-linear-gradient(#04256d , rgb(0, 255, 132)) #04256d; /* রঙ একটু গাঢ় হবে */
+            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2); /* ছায়া বাড়বে */
+        }
+
+        /* ক্লিক করলে হালকা দেবে যাবে */
+        .home-btn:active {
+            transform: translateY(2px);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Hello World !</h1>
+
+    <button class="home-btn" onclick="window.location.href='/'">Home</button>
+
+</body>
+</html>

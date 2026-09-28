@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <title>অফিসিয়াল নাগরিক সনদ - ইটনা</title>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+    <style>
+        :root { 
+            --bd-green: #006a4e; 
+            --gold: #b8860b; 
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --input-border: #cccccc;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --text-color: #e0e0e0;
+            --input-border: #444444;
+        }
+
+        body { 
+            font-family: 'SolaimanLipi', Arial, sans-serif; 
+            background: var(--bg-color); 
+            color: var(--text-color);
+            margin: 0; padding: 20px; 
+            transition: all 0.3s ease;
+        }
+        
+        .container { 
+            max-width: 900px; margin: auto; 
+            background: var(--card-bg); 
+            padding: 30px; border-radius: 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
+        }
+
+        .controls-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+
+        .btn-toggle {
+            padding: 10px 20px; border-radius: 30px; border: none;
+            cursor: pointer; font-weight: bold; transition: 0.3s;
+            display: flex; align-items: center; gap: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .lang-btn { background: linear-gradient(135deg, #006a4e, #004d39); color: white; }
+        .theme-btn { background: #444; color: white; }
+
+        .ocr-upload-box {
+            background: rgba(184, 134, 11, 0.1);
+            border: 2px dashed var(--gold);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .setup-box { 
+            background: rgba(0,0,0,0.02); padding: 20px; 
+            border: 1px solid var(--input-border); 
+            border-radius: 12px; margin-bottom: 20px; 
+        }
+
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .input-group { display: flex; flex-direction: column; margin-bottom: 12px; }
+        label { font-weight: bold; font-size: 13px; margin-bottom: 6px; }
+        select, input { padding: 12px; border: 1px solid var(--input-border); border-radius: 8px; background: var(--card-bg); color: var(--text-color); }
+
+        /* প্যাড ডিজাইন */
+        #pad { 
+            display: none; width: 210mm; min-height: 297mm; 
+            margin: 20px auto; padding: 15mm 20mm; 
+            border: 8px double var(--gold); 
+            background: #fff !important; 
+            position: relative; box-sizing: border-box; color: #000;
+        }
+        
+        .watermark { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); width: 450px; opacity: 0.08; z-index: 0; pointer-events: none; }
+        .header-main { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #006a4e; padding-bottom: 10px; position: relative; z-index: 1; }
+        .logo-side { width: 80px; height: 80px; object-fit: contain; }
+        .header-content { text-align: center; flex-grow: 1; }
+        .header-content h1 { color: #000080; margin: 2px 0; font-size: 28px; font-weight: bold; }
+
+        .cert-title { text-align: center; margin: 30px auto; border: 1.5px solid var(--gold); width: fit-content; padding: 4px 40px; border-radius: 25px; font-size: 18px; font-weight: bold; position: relative; z-index: 1; }
+        .main-text { line-height: 2.2; font-size: 14pt; text-align: justify; min-height: 300px; position: relative; z-index: 1; }
+        .signature-area { margin-top: 80px; display: flex; justify-content: flex-end; text-align: center; position: relative; z-index: 1; }
+
+        .btn-area { margin-top: 30px; text-align: center; display: none; }
+        .btn-final { padding: 12px 30px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; margin: 5px; color: white; }
+        .btn-print { background: #1a73e8; }
+        .btn-new { background: #d93025; }
+
+        @media print {
+            .no-print, .ocr-upload-box, .container, .btn-area { display: none !important; }
+            #pad { display: block !important; margin: 0; border: 8px double var(--gold) !important; width: 100%; }
+            body { background: white; padding: 0; }
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+<div class="container no-print">
+    <div class="controls-top">
+        <h2 style="margin:0; color: var(--bd-green);">🏛️ ডিজিটাল নাগরিক সনদ</h2>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn-toggle theme-btn" onclick="toggleTheme()">🌙 নাইট মোড</button>
+            <button class="btn-toggle lang-btn" id="langBtn" onclick="toggleInputLang()">🌐 English Format</button>
+        </div>
+    </div>
+
+    <div class="ocr-upload-box">
+        <strong>📷 ছবি থেকে তথ্য অটো-ফিল করুন (NID/কার্ড)</strong><br>
+        <input type="file" id="ocrInput" accept="image/*" style="margin-top:10px;">
+        <div id="ocrStatus" style="display:none; color: var(--bd-green); margin-top:10px;">🔍 প্রসেসিং...</div>
+    </div>
+
+    <div class="setup-box">
+        <h4>১. এলাকা নির্বাচন</h4>
+        <div class="grid-3">
+            <div class="input-group"><label>বিভাগ:</label><input type="text" id="divInput" value="ঢাকা" readonly></div>
+            <div class="input-group"><label>জেলা:</label><input type="text" id="distInput" value="কিশোরগঞ্জ" readonly></div>
+            <div class="input-group"><label>উপজেলা:</label><input type="text" id="upaInput" value="ইটনা" readonly></div>
+            <div class="input-group" style="grid-column: span 2;">
+                <label id="lblUnion">ইউনিয়ন নির্বাচন করুন</label>
+                <select id="unionSelect" onchange="updatePostOffice()">
+                    <option value="">সিলেক্ট করুন</option>
+                    <option value="১নং রায়টুটী|Raytuti|মোহাম্মদ এনামূল হক খান মিল্কী|Md Enamul Haque Khan Milki|রায়টুটী-২৩৯০|Raytuti-2390">১নং রায়টুটী</option>
+                    <option value="২নং ধনপুর|Dhanpur|প্রদীপ কুমার দাস|Pradip Kumar Das|ধনপুর-২৩৯০|Dhanpur-2390">২নং ধনপুর</option>
+                    <option value="৩নং মৃগা|Mriga|মোঃ দারুল ইসলাম|Md Darul Islam|মৃগা-২৩৯০|Mriga-2390">৩নং মৃগা</option>
+                    <option value="৪নং ইটনা|Itna|মোঃ সোহাগ মিয়া|Md Sohag Miah|ইটনা-২৩৯০|Itna-2390">৪নং ইটনা</option>
+                    <option value="৫নং বড়িবাড়ি|Boribari|আঃ ছাত্তার|Abdur Sattar|বাদলা-২৩১০|Badla-2310">৫নং বড়িবাড়ি</option>
+                    <option value="৬নং বাদলা|Badla|আদিলুজ্জামান ভূঞা|Adiluzzaman Bhuiyan|বাদলা-২৩১০|Badla-2310">৬নং বাদলা</option>
+                    <option value="৭নং এলংজুরী|Elongjuri|রুবেল মিয়া|Rubel Miah|এলংজুরী-২৩৯০|Elongjuri-2390">৭নং এলংজুরী</option>
+                    <option value="৮নং জয়সিদ্ধি|Joyasiddhi|মোঃ মনির উদ্দিন|Md Monir Uddin|জয়সিদ্ধি-২৩৯০|Joyasiddhi-2390">৮নং জয়সিদ্ধি</option>
+                    <option value="৯নং চৌগাংগা|Chowganga|সাইফুল ইসলাম|Saiful Islam|চৌগাংগা-২৩৯০|Chowganga-2390">৯নং চৌগাংগা</option>
+                </select>
+            </div>
+            <div class="input-group"><label id="lblPost">ডাকঘর:</label><input type="text" id="postInput"></div>
+        </div>
+    </div>
+
+    <div class="setup-box">
+        <h4 id="lblInfo">২. নাগরিকের তথ্য</h4>
+        <div class="grid-3">
+            <div class="input-group"><label id="lblName">নাম:</label><input type="text" id="name"></div>
+            <div class="input-group"><label id="lblFather">পিতা/স্বামী:</label><input type="text" id="father"></div>
+            <div class="input-group"><label id="lblMother">মাতার নাম:</label><input type="text" id="mother"></div>
+            <div class="input-group"><label id="lblNid">NID নং:</label><input type="text" id="nid"></div>
+            <div class="input-group"><label id="lblVillage">গ্রাম:</label><input type="text" id="village"></div>
+            <div class="input-group"><label id="lblWard">ওয়ার্ড নং:</label><input type="text" id="ward"></div>
+        </div>
+    </div>
+
+    <button id="genBtn" onclick="generateCert()" style="width:100%; padding:18px; background:var(--bd-green); color:white; border:none; border-radius:10px; font-size:18px; cursor:pointer; font-weight:bold;">সনদ তৈরি করুন</button>
+</div>
+
+<div id="pad">
+    <img id="p_watermark" src="" class="watermark">
+    <div class="govt-title" id="p_govt_title" style="text-align: center; font-weight: bold; position: relative; z-index: 1;">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</div>
+    
+    <div class="header-main">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/8/84/Government_Seal_of_Bangladesh.svg" class="logo-side">
+        <div class="header-content">
+            <h1 id="p_union_head">ইউনিয়ন পরিষদ</h1>
+            <p id="p_header_address" style="font-weight: bold;"></p>
+            <p style="color:red; font-size: 11px; margin-top: 5px;">"স্মার্ট ইউনিয়ন, স্মার্ট সেবা"</p>
+        </div>
+        <img id="p_logo_right" src="" class="logo-side">
+    </div>
+
+    <div style="display: flex; justify-content: space-between; margin: 20px 0; font-weight: bold; font-size: 12px; position: relative; z-index: 1;">
+        <div><span id="p_sm_txt">স্মারক নং</span>: <span id="p_sarok"></span></div>
+        <div><span id="p_dt_txt">তারিখ</span>: <span id="p_date"></span></div>
+    </div>
+
+    <div class="cert-title" id="p_cert_title">নাগরিক সনদ</div>
+    <div class="main-text" id="p_body"></div>
+
+    <div class="signature-area">
+        <div style="text-align:center;">
+            .........................................<br>
+            <b><span id="p_chairman"></span></b><br>
+            <span id="p_chair_label">চেয়ারম্যান</span><br>
+            <span id="p_footer_union"></span> <span id="p_up_label">ইউনিয়ন পরিষদ</span><br>
+            <span id="p_dist_label">ইটনা, কিশোরগঞ্জ।</span>
+        </div>
+    </div>
+</div>
+
+<div class="btn-area no-print" id="printControls">
+    <button class="btn-final btn-print" onclick="window.print()">🖨️ প্রিন্ট করুন</button>
+    <button class="btn-final btn-new" onclick="location.reload()">🔄 নতুন সনদ</button>
+</div>
+
+<script>
+    const unionLogos = {
+        "১নং রায়টুটী": "https://i.postimg.cc/SKR3qHLn/Untitled-6-copy-6.jpg",
+        "২নং ধনপুর": "https://i.postimg.cc/Pq7cqKKr/Untitled-6-copy-4.jpg",
+        "৩নং মৃগা": "https://i.postimg.cc/VNhTN44N/Untitled-6-copy-3.jpg",
+        "৪নং ইটনা": "https://i.postimg.cc/pdS7dkkT/itana-i'una-ya-na-para-sada.jpg",
+        "৫নং বড়িবাড়ি": "https://i.postimg.cc/7LhdDj1G/Untitled-6-copy-8.jpg",
+        "৬নং বাদলা": "https://i.postimg.cc/k5Gz9LNB/Untitled-6-copy-9.jpg",
+        "৭নং এলংজুরী": "https://i.postimg.cc/KYjwFC7K/Untitled-6-copy-5.jpg",
+        "৮নং জয়সিদ্ধি": "https://i.postimg.cc/hGGvn43G/Untitled-6-copy.jpg",
+        "৯নং চৌগাংগা": "https://i.postimg.cc/0N43NZZ9/Untitled-6-copy-7.jpg"
+    };
+
+    let mode = 'bn';
+
+    function toggleTheme() {
+        const body = document.body;
+        const currentTheme = body.getAttribute('data-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        body.setAttribute('data-theme', newTheme);
+        document.querySelector('.theme-btn').innerText = newTheme === 'light' ? '🌙 নাইট মোড' : '☀️ লাইট মোড';
+    }
+
+    function toggleInputLang() {
+        mode = (mode === 'bn') ? 'en' : 'bn';
+        document.getElementById('langBtn').innerText = (mode === 'en') ? "🌐 বাংলা ফরম্যাট" : "🌐 English Format";
+        updatePostOffice();
+    }
+
+    function updatePostOffice() {
+        const val = document.getElementById('unionSelect').value;
+        if(val) {
+            const data = val.split('|');
+            document.getElementById('postInput').value = (mode === 'bn') ? data[4] : data[5];
+        }
+    }
+
+    function toBnNum(n) {
+        const bn = {'0':'০','1':'১','2':'২','3':'৩','4':'৪','5':'৫','6':'৬','7':'৭','8':'৮','9':'৯'};
+        return n.toString().replace(/[0-9]/g, s => bn[s]);
+    }
+
+    function generateCert() {
+        const val = document.getElementById('unionSelect').value;
+        if(!val) { alert("ইউনিয়ন সিলেক্ট করুন!"); return; }
+        const u = val.split('|');
+        const unionNameBN = u[0];
+        const sarok = "46.00.4908." + Math.floor(1000 + Math.random() * 9000);
+        const dateStr = new Date().toLocaleDateString('en-GB');
+
+        // সেট লোগো
+        const logo = unionLogos[unionNameBN] || unionLogos["৪নং ইটনা"];
+        document.getElementById('p_logo_right').src = logo;
+        document.getElementById('p_watermark').src = logo;
+
+        if(mode === 'bn') {
+            document.getElementById('p_govt_title').innerText = "গণপ্রজাতন্ত্রী বাংলাদেশ সরকার";
+            document.getElementById('p_union_head').innerText = u[0] + " ইউনিয়ন পরিষদ";
+            document.getElementById('p_header_address').innerText = `ডাকঘর: ${document.getElementById('postInput').value}, উপজেলা: ইটনা, জেলা: কিশোরগঞ্জ।`;
+            document.getElementById('p_sarok').innerText = toBnNum(sarok);
+            document.getElementById('p_date').innerText = toBnNum(dateStr);
+            document.getElementById('p_body').innerHTML = `<span style="display:inline-block; width:40px;"></span>এই মর্মে প্রত্যয়ন করা যাইতেছে যে, নাম: <b>${document.getElementById('name').value}</b>, পিতা: <b>${document.getElementById('father').value}</b>, মাতা: <b>${document.getElementById('mother').value}</b>, জাতীয় পরিচয়পত্র নং: <b>${toBnNum(document.getElementById('nid').value)}</b>। তিনি অত্র ইউনিয়নের <b>${toBnNum(document.getElementById('ward').value)}</b> নং ওয়ার্ডের <b>${document.getElementById('village').value}</b> গ্রামের একজন স্থায়ী বাসিন্দা। আমি তাহাকে ব্যক্তিগতভাবে চিনি ও জানি। আমার জানামতে তিনি রাষ্ট্রের কোনো দেশবিরোধী কাজের সহিত জড়িত নহেন। <br><br> আমি তাঁহার উজ্জ্বল ভবিষ্যৎ ও সর্বাঙ্গীন মঙ্গল কামনা করি।`;
+            document.getElementById('p_chairman').innerText = u[2];
+            document.getElementById('p_footer_union').innerText = u[0];
+        } else {
+            document.getElementById('p_govt_title').innerText = "Government of the People's Republic of Bangladesh";
+            document.getElementById('p_union_head').innerText = u[1] + " Union Parishad";
+            document.getElementById('p_header_address').innerText = `Post: ${document.getElementById('postInput').value}, Upazila: Itna, District: Kishoreganj.`;
+            document.getElementById('p_sarok').innerText = sarok;
+            document.getElementById('p_date').innerText = dateStr;
+            document.getElementById('p_body').innerHTML = `<span style="display:inline-block; width:40px;"></span>This is to certify that, Name: <b>${document.getElementById('name').value}</b>, Father: <b>${document.getElementById('father').value}</b>, Mother: <b>${document.getElementById('mother').value}</b>, NID No: <b>${document.getElementById('nid').value}</b>. He/She is a permanent resident of village: <b>${document.getElementById('village').value}</b>, Ward No: <b>${document.getElementById('ward').value}</b> of this Union. I know him/her personally. To the best of my knowledge, he/she is not involved in any anti-state activities. <br><br> I wish him/her every success in life.`;
+            document.getElementById('p_chairman').innerText = u[3];
+            document.getElementById('p_footer_union').innerText = u[1];
+        }
+
+        document.querySelector('.container').style.display = 'none';
+        document.getElementById('pad').style.display = 'block';
+        document.getElementById('printControls').style.display = 'block';
+    }
+</script>
+</body>
+</html>

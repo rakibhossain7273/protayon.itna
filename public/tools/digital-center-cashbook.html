@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ডিজিটাল সেন্টার অটোমেটেড ডাটা এন্ট্রি ও বাকির খাতা</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Hind Siliguri) -->
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tesseract OCR Library -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --bg: #f1f5f9;
+            --card-bg: #ffffff;
+            --text: #0f172a;
+            --border: #cbd5e1;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --warning: #d97706;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Hind Siliguri', sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding: 15px; }
+        .container { max-width: 1300px; margin: 0 auto; }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Dashboard Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 5px solid var(--primary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .summary-card.green { border-left-color: var(--success); }
+        .summary-card.orange { border-left-color: var(--warning); }
+        .summary-card.red { border-left-color: var(--danger); }
+        .summary-card.blue { border-left-color: var(--primary); }
+
+        .summary-card h4 { font-size: 13px; color: #64748b; }
+        .summary-card h2 { font-size: 20px; margin-top: 5px; color: #0f172a; }
+
+        /* Main Form Layout */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 20px;
+        }
+        @media (max-width: 900px) { .grid-layout { grid-template-columns: 1fr; } }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+        }
+
+        .paste-area {
+            border: 2px dashed var(--primary);
+            border-radius: 8px;
+            padding: 25px 15px;
+            text-align: center;
+            background: #eff6ff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .paste-area:hover { background: #dbeafe; }
+        .paste-area i { font-size: 35px; color: var(--primary); margin-bottom: 8px; }
+
+        #imagePreview {
+            max-width: 100%;
+            max-height: 140px;
+            margin-top: 10px;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .form-row-4 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 8px;
+        }
+
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 13px; }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+        }
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--primary);
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn:hover { background-color: var(--primary-dark); }
+        .btn-success { background-color: var(--success); }
+        .btn-warning { background-color: var(--warning); }
+        .btn-sm { padding: 4px 8px; font-size: 12px; width: auto; }
+
+        /* Table & Filter Section */
+        .table-section { margin-top: 25px; }
+        .filter-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+        }
+        .filter-box input, .filter-box select {
+            padding: 6px 10px;
+            border-radius: 5px;
+            border: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        .table-wrapper { overflow-x: auto; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            font-size: 13px;
+        }
+        th, td { padding: 10px 8px; border: 1px solid var(--border); text-align: left; }
+        th { background-color: #e2e8f0; font-weight: 600; }
+        tr:nth-child(even) { background-color: #f8fafc; }
+
+        .badge {
+            padding: 3px 6px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .badge-new { background: #dcfce7; color: #15803d; }
+        .badge-edit { background: #fef3c7; color: #b45309; }
+        .badge-death { background: #fee2e2; color: #b91c1c; }
+
+        /* Status Badges */
+        .status-pending { background: #fef3c7; color: #d97706; padding: 4px 8px; border-radius: 6px; font-weight: bold; display: inline-block; }
+        .status-secretary { background: #e0f2fe; color: #0284c7; padding: 4px 8px; border-radius: 6px; font-weight: bold; display: inline-block; }
+        .status-delivered { background: #dcfce7; color: #16a34a; padding: 4px 8px; border-radius: 6px; font-weight: bold; display: inline-block; }
+
+        .status-msg { margin-top: 8px; font-size: 13px; color: var(--primary); display: none; }
+
+        /* Payment Modal */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0; top: 0; 
+            width: 100%; height: 100%; 
+            background-color: rgba(0,0,0,0.5); 
+            justify-content: center; 
+            align-items: center;
+        }
+        .modal-content {
+            background-color: white; 
+            padding: 20px; 
+            border-radius: 8px; 
+            width: 320px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h2><i class="fa-solid fa-calculator"></i> স্মার্ট ডাটা এন্ট্রি ও বাকির হিসাব খাতা</h2>
+        <p style="font-size: 13px; color: #64748b;">অটোমেটেড ইমেজ স্ক্যানিং, আবেদনের ধরন ও কার্যালয় সনাক্তকরণ এবং বকেয়া হিসাব</p>
+    </header>
+
+    <!-- Top Summary Dashboard -->
+    <div class="summary-grid">
+        <div class="summary-card blue">
+            <h4>মোট আবেদন</h4>
+            <h2 id="dashTotalEntries">০ টি</h2>
+        </div>
+        <div class="summary-card orange">
+            <h4>মোট নেওয়া ফি</h4>
+            <h2 id="dashTotalIncome">৳ ০</h2>
+        </div>
+        <div class="summary-card green">
+            <h4>মোট লাভ</h4>
+            <h2 id="dashTotalProfit">৳ ০</h2>
+        </div>
+        <div class="summary-card red">
+            <h4>মোট বাকি (বকেয়া)</h4>
+            <h2 id="dashTotalDue">৳ ০</h2>
+        </div>
+    </div>
+
+    <div class="grid-layout">
+        <!-- Paste Image Section -->
+        <div class="card">
+            <h3><i class="fa-regular fa-image"></i> ছবি স্ক্যান সেকশন</h3>
+            <p style="font-size: 12px; color: #64748b; margin-bottom: 10px;">কপি করা ছবি সরাসরি এখানে `Ctrl + V` চাপুন</p>
+
+            <div class="paste-area" id="pasteZone" tabindex="0">
+                <i class="fa-solid fa-file-import"></i>
+                <p><strong>`Ctrl + V` চাপুন অথবা ছবি ড্রপ করুন</strong></p>
+                <img id="imagePreview" alt="Preview">
+            </div>
+            <div id="statusMsg" class="status-msg">
+                <span id="statusText">ছবি থেকে তথ্য প্রসেস হচ্ছে...</span>
+            </div>
+
+            <!-- Backup Section -->
+            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--border);">
+                <p style="font-size: 12px; font-weight: bold; margin-bottom: 8px;">🛡️ ডাটা হারানোর ভয় নেই (ব্যাকআপ ব্যবস্থা):</p>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-warning btn-sm" onclick="exportBackup()"><i class="fa-solid fa-download"></i> ডাটা ব্যাকআপ রাখুন</button>
+                    <button class="btn btn-sm" style="background:#64748b" onclick="document.getElementById('importFile').click()"><i class="fa-solid fa-upload"></i> ব্যাকআপ রিকভার</button>
+                    <input type="file" id="importFile" style="display:none" onchange="importBackup(event)" accept=".json">
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Input Section -->
+        <div class="card">
+            <h3><i class="fa-solid fa-pen-to-square"></i> আবেদনের বিবরণ ও হিসাব</h3>
+            <form id="entryForm" style="margin-top: 10px;">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="serviceType">আবেদনের ধরন (অটো স্ক্যান):</label>
+                        <select id="serviceType" required>
+                            <option value="জন্ম নিবন্ধন">জন্ম নিবন্ধন (নতুন)</option>
+                            <option value="তথ্য সংশোধন">জন্ম তথ্য সংশোধন</option>
+                            <option value="মৃত্যু নিবন্ধন">মৃত্যু নিবন্ধন</option>
+                            <option value="অন্যান্য">অন্যান্য সার্ভিস</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="applicantName">গ্রাহকের নাম:</label>
+                        <input type="text" id="applicantName" placeholder="নাম লিখুন" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="appNumber">আবেদন আইডি/নম্বর:</label>
+                        <input type="text" id="appNumber" placeholder="যেমন: 60564204" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="appDate">তারিখ:</label>
+                        <input type="date" id="appDate" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="officeAddress">কার্যালয়ের নাম ও ঠিকানা (অটো স্ক্যান):</label>
+                    <input type="text" id="officeAddress" placeholder="যেমন: ইটনা, ইটনা, কিশোরগঞ্জ...">
+                </div>
+
+                <!-- Financials with Discount Input -->
+                <div style="background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px dashed var(--border); margin-bottom: 10px;">
+                    <div class="form-row-4">
+                        <div class="form-group" style="margin:0;">
+                            <label for="totalFee">মোট ফি (৳):</label>
+                            <input type="number" id="totalFee" placeholder="২০০" value="0" oninput="calcDueProfit()">
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label for="paidAmount">জমা (৳):</label>
+                            <input type="number" id="paidAmount" placeholder="১৫০" value="0" oninput="calcDueProfit()">
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label for="discountAmount">ছাড় (৳):</label>
+                            <input type="number" id="discountAmount" placeholder="২০" value="0" oninput="calcDueProfit()">
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label for="netCost">খরচ (৳):</label>
+                            <input type="number" id="netCost" placeholder="৫০" value="0" oninput="calcDueProfit()">
+                        </div>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:12px; font-weight:bold;">
+                        <span id="lblDue" style="color:var(--danger)">বাকি: ৳ ০</span>
+                        <span id="lblProfit" style="color:var(--success)">অনুমানিক লাভ: ৳ ০</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    <i class="fa-solid fa-floppy-disk"></i> তথ্য নিরাপদে সেভ করুন
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Data Table & Filter Section -->
+    <div class="card table-section">
+        <h3><i class="fa-solid fa-database"></i> সংরক্ষিত ডাটাবেজ</h3>
+        
+        <!-- Filters -->
+        <div class="filter-box">
+            <div>
+                <label style="font-size:12px;">তারিখ ফিল্টার:</label><br>
+                <input type="date" id="filterDate" onchange="filterData()">
+            </div>
+            <div>
+                <label style="font-size:12px;">আবেদনের ধরন:</label><br>
+                <select id="filterType" onchange="filterData()">
+                    <option value="">সব দেখুন</option>
+                    <option value="জন্ম নিবন্ধন">জন্ম নিবন্ধন</option>
+                    <option value="তথ্য সংশোধন">তথ্য সংশোধন</option>
+                    <option value="মৃত্যু নিবন্ধন">মৃত্যু নিবন্ধন</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size:12px;">সার্চ করুন:</label><br>
+                <input type="text" id="filterSearch" placeholder="নাম বা নম্বর দিয়ে..." onkeyup="filterData()">
+            </div>
+            <div style="margin-left: auto; align-self: flex-end;">
+                <button class="btn btn-sm" onclick="resetFilters()">ফিল্টার রিসেট</button>
+                <button class="btn btn-sm btn-success" onclick="exportCSV()"><i class="fa-solid fa-file-excel"></i> Excel এ বের করুন</button>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>ধরন</th>
+                        <th>নাম</th>
+                        <th>আইডি নম্বর</th>
+                        <th>তারিখ</th>
+                        <th>কার্যালয়ের ঠিকানা</th>
+                        <th>মোট ফি</th>
+                        <th>জমা</th>
+                        <th>ছাড়</th>
+                        <th>বাকি</th>
+                        <th>লাভ</th>
+                        <th>স্ট্যাটাস আপডেট</th>
+                        <th>অ্যাকশন</th>
+                    </tr>
+                </thead>
+                <tbody id="dataTableBody">
+                    <!-- Dynamic Rows -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Payment & Discount Entry -->
+<div id="paymentModal" class="modal">
+    <div class="modal-content">
+        <h3 style="font-size: 16px; margin-bottom: 10px;"><i class="fa-solid fa-hand-holding-dollar"></i> বকেয়া ও ছাড়ের হিসাব</h3>
+        <p id="modalCurrentDue" style="font-size: 13px; font-weight: bold; color: var(--danger); margin-bottom: 10px;"></p>
+        
+        <div class="form-group">
+            <label for="modalPaidInput">নতুন জমা (৳):</label>
+            <input type="number" id="modalPaidInput" value="0" placeholder="টাকার পরিমাণ লিখুন">
+        </div>
+        <div class="form-group">
+            <label for="modalDiscountInput">নতুন ছাড়/ডিসকাউন্ট (৳):</label>
+            <input type="number" id="modalDiscountInput" value="0" placeholder="ছাড়ের পরিমাণ লিখুন">
+        </div>
+
+        <div style="display: flex; gap: 8px; margin-top: 15px;">
+            <button class="btn btn-success btn-sm" style="flex:1" onclick="submitModalPayment()"><i class="fa-solid fa-check"></i> সেভ করুন</button>
+            <button class="btn btn-sm" style="background:#64748b; flex:1" onclick="closeModal()">বাতিল</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const STORAGE_KEY = 'smart_portal_records_v4';
+    let currentEditingId = null;
+
+    // Elements
+    const imagePreview = document.getElementById('imagePreview');
+    const statusMsg = document.getElementById('statusMsg');
+    const statusText = document.getElementById('statusText');
+
+    const entryForm = document.getElementById('entryForm');
+    const serviceType = document.getElementById('serviceType');
+    const applicantName = document.getElementById('applicantName');
+    const appNumber = document.getElementById('appNumber');
+    const appDate = document.getElementById('appDate');
+    const officeAddress = document.getElementById('officeAddress');
+    
+    const totalFee = document.getElementById('totalFee');
+    const paidAmount = document.getElementById('paidAmount');
+    const discountAmount = document.getElementById('discountAmount');
+    const netCost = document.getElementById('netCost');
+
+    // Default Today's Date
+    document.getElementById('appDate').valueAsDate = new Date();
+
+    document.addEventListener('DOMContentLoaded', () => {
+        seedInitialData(); // ২ টি প্রাথমিক ডাটা যুক্ত করার জন্য
+        loadData();
+    });
+
+    // ২ টি প্রাথমিক এন্ট্রি যদি ডাটাবেজ ফাঁকা থাকে
+    function seedInitialData() {
+        const records = getRecords();
+        if (records.length === 0) {
+            const defaultRecords = [
+                {
+                    id: 1700000000001,
+                    type: "জন্ম নিবন্ধন",
+                    name: "রাকিবুল হাসান",
+                    number: "60564201",
+                    date: new Date().toISOString().split('T')[0],
+                    address: "ইটনা, কিশোরগঞ্জ",
+                    fee: 200,
+                    paid: 150,
+                    discount: 0,
+                    cost: 50,
+                    due: 50,
+                    profit: 100,
+                    status: "পেন্ডিং"
+                },
+                {
+                    id: 1700000000002,
+                    type: "তথ্য সংশোধন",
+                    name: "আব্দুল কুদ্দুস",
+                    number: "60564202",
+                    date: new Date().toISOString().split('T')[0],
+                    address: "ইটনা, কিশোরগঞ্জ",
+                    fee: 300,
+                    paid: 300,
+                    discount: 0,
+                    cost: 100,
+                    due: 0,
+                    profit: 200,
+                    status: "সচিবের কাছে জমা হয়েছে"
+                }
+            ];
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultRecords));
+        }
+    }
+
+    // Auto Calculation
+    function calcDueProfit() {
+        const fee = parseFloat(totalFee.value) || 0;
+        const paid = parseFloat(paidAmount.value) || 0;
+        const discount = parseFloat(discountAmount.value) || 0;
+        const cost = parseFloat(netCost.value) || 0;
+
+        const due = fee - (paid + discount);
+        const profit = paid - cost;
+
+        document.getElementById('lblDue').innerText = `বাকি: ৳ ${due > 0 ? due : 0}`;
+        document.getElementById('lblProfit').innerText = `অনুমানিক লাভ: ৳ ${profit}`;
+    }
+
+    // Image Clipboard Paste
+    document.addEventListener('paste', (e) => {
+        const items = e.clipboardData.items;
+        for (let item of items) {
+            if (item.type.indexOf('image') === 0) {
+                const blob = item.getAsFile();
+                processImage(blob);
+                break;
+            }
+        }
+    });
+
+    // Advanced OCR Logic for Type & Address Detection
+    function processImage(blob) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            imagePreview.src = e.target.result;
+            imagePreview.style.display = 'block';
+        };
+        reader.readAsDataURL(blob);
+
+        statusMsg.style.display = 'block';
+        statusText.innerText = 'ছবি থেকে তথ্য বিশ্লেষণ করা হচ্ছে...';
+
+        Tesseract.recognize(blob, 'ben+eng')
+            .then(({ data: { text } }) => {
+                statusText.innerText = 'অটো-স্ক্যান সফল হয়েছে!';
+                parseTextToFields(text);
+            })
+            .catch(() => {
+                statusText.innerText = 'ম্যানুয়ালি ইনপুট দিন।';
+            });
+    }
+
+    function parseTextToFields(text) {
+        const cleanDigitsText = convertBengaliToEnglishDigits(text);
+
+        if (text.includes("সংশোধন") || text.includes("সংশোধনের")) {
+            serviceType.value = "তথ্য সংশোধন";
+        } else if (text.includes("মৃত্যু")) {
+            serviceType.value = "মৃত্যু নিবন্ধন";
+        } else if (text.includes("জন্ম নিবন্ধন") || text.includes("জন্ম")) {
+            serviceType.value = "জন্ম নিবন্ধন";
+        }
+
+        const idMatch = cleanDigitsText.match(/([0-9]{8,17})/);
+        if (idMatch) appNumber.value = idMatch[1];
+
+        const dateMatch = cleanDigitsText.match(/(\d{1,2}[\/\.-]\d{1,2}[\/\.-]\d{4})/);
+        if (dateMatch) {
+            const parts = dateMatch[1].split(/[\/\.-]/);
+            if(parts.length === 3) {
+                const formatted = `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
+                appDate.value = formatted;
+            }
+        }
+
+        const officeMatch = text.match(/কার্যালয়ের\s*নাম[,\s]*ঠিকানা\s*:\s*([^\n]+)/i) || 
+                            text.match(/ঠিকানা\s*:\s*([^\n]+)/i);
+        if (officeMatch) {
+            officeAddress.value = officeMatch[1].replace(/[-:]/g, '').trim();
+        }
+    }
+
+    function convertBengaliToEnglishDigits(str) {
+        const benDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+        return str.replace(/[০-৯]/g, w => benDigits.indexOf(w));
+    }
+
+    // Form Submit Logic
+    entryForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const fee = parseFloat(totalFee.value) || 0;
+        const paid = parseFloat(paidAmount.value) || 0;
+        const discount = parseFloat(discountAmount.value) || 0;
+        const cost = parseFloat(netCost.value) || 0;
+        const due = fee - (paid + discount);
+
+        const newRecord = {
+            id: Date.now(),
+            type: serviceType.value,
+            name: applicantName.value.trim(),
+            number: appNumber.value.trim(),
+            date: appDate.value,
+            address: officeAddress.value.trim() || 'N/A',
+            fee: fee,
+            paid: paid,
+            discount: discount,
+            cost: cost,
+            due: due > 0 ? due : 0,
+            profit: paid - cost,
+            status: "পেন্ডিং" // নতুন এন্ট্রি হলে ডিফল্ট পেন্ডিং থাকবে
+        };
+
+        const records = getRecords();
+        records.unshift(newRecord);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+
+        // Form Reset
+        applicantName.value = '';
+        appNumber.value = '';
+        officeAddress.value = '';
+        totalFee.value = '0';
+        paidAmount.value = '0';
+        discountAmount.value = '0';
+        netCost.value = '0';
+        calcDueProfit();
+        imagePreview.style.display = 'none';
+        statusMsg.style.display = 'none';
+
+        loadData();
+    });
+
+    function getRecords() {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    }
+
+    // Toggle Status Function
+    function toggleStatus(id) {
+        let records = getRecords();
+        const record = records.find(r => r.id === id);
+        if (!record) return;
+
+        if (!record.status || record.status === "পেন্ডিং") {
+            record.status = "সচিবের কাছে জমা হয়েছে";
+        } else if (record.status === "সচিবের কাছে জমা হয়েছে") {
+            record.status = "কাজ ডেলিভারি হয়েছে";
+        } else {
+            record.status = "পেন্ডিং"; // আবার চাপ দিলে পুনরায় পেন্ডিং এ ফিরে যাবে
+        }
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+        loadData();
+    }
+
+    // Render Table & Dashboard
+    function loadData(recordsToDisplay = null) {
+        const records = recordsToDisplay || getRecords();
+        const tbody = document.getElementById('dataTableBody');
+        tbody.innerHTML = '';
+
+        let totalFeeSum = 0, totalProfitSum = 0, totalDueSum = 0;
+
+        const allRecords = getRecords();
+        allRecords.forEach(r => {
+            totalFeeSum += r.fee || 0;
+            totalProfitSum += r.profit || 0;
+            totalDueSum += r.due || 0;
+        });
+
+        // Dashboard Numbers
+        document.getElementById('dashTotalEntries').innerText = `${allRecords.length} টি`;
+        document.getElementById('dashTotalIncome').innerText = `৳ ${totalFeeSum}`;
+        document.getElementById('dashTotalProfit').innerText = `৳ ${totalProfitSum}`;
+        document.getElementById('dashTotalDue').innerText = `৳ ${totalDueSum}`;
+
+        if (records.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="13" style="text-align:center;">কোনো তথ্য পাওয়া যায়নি।</td></tr>`;
+            return;
+        }
+
+        records.forEach((item, index) => {
+            let badgeClass = 'badge-new';
+            if (item.type === 'তথ্য সংশোধন') badgeClass = 'badge-edit';
+            if (item.type === 'মৃত্যু নিবন্ধন') badgeClass = 'badge-death';
+
+            // Status display logic
+            let currentStatus = item.status || "পেন্ডিং";
+            let statusBtnClass = "btn-warning";
+            let statusBadgeClass = "status-pending";
+            let statusIcon = "fa-clock";
+
+            if (currentStatus === "সচিবের কাছে জমা হয়েছে") {
+                statusBadgeClass = "status-secretary";
+                statusBtnClass = "btn-primary";
+                statusIcon = "fa-building-columns";
+            } else if (currentStatus === "কাজ ডেলিভারি হয়েছে") {
+                statusBadgeClass = "status-delivered";
+                statusBtnClass = "btn-success";
+                statusIcon = "fa-circle-check";
+            }
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td><span class="badge ${badgeClass}">${item.type}</span></td>
+                <td><strong>${item.name}</strong></td>
+                <td>${item.number}</td>
+                <td>${item.date}</td>
+                <td><small>${item.address}</small></td>
+                <td>৳${item.fee}</td>
+                <td>৳${item.paid}</td>
+                <td style="color:var(--warning); font-weight:bold;">৳${item.discount || 0}</td>
+                <td style="color:${item.due > 0 ? 'red':'green'}; font-weight:bold;">
+                    ৳${item.due}
+                    ${item.due > 0 ? 
+                        `<br><button class="btn btn-sm btn-success" style="padding:1px 5px; font-size:10px; margin-top:2px;" onclick="openPaymentModal(${item.id})"><i class="fa-solid fa-check"></i> জমা/ছাড় এন্ট্রি</button>` 
+                        : '<br><span style="color:green; font-size:10px;"><i class="fa-solid fa-check-double"></i> পরিশোধিত</span>'
+                    }
+                </td>
+                <td style="color:green; font-weight:bold;">৳${item.profit}</td>
+                <td>
+                    <span class="${statusBadgeClass}">${currentStatus}</span>
+                    <button class="btn btn-sm ${statusBtnClass}" style="margin-top:5px; font-size:11px;" onclick="toggleStatus(${item.id})">
+                        <i class="fa-solid ${statusIcon}"></i> স্ট্যাটাস বদলান
+                    </button>
+                </td>
+                <td>
+                    <button style="color:var(--danger); border:none; background:none; cursor:pointer;" onclick="deleteRecord(${item.id})">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // Modal Payment & Discount Handlers
+    function openPaymentModal(id) {
+        currentEditingId = id;
+        const records = getRecords();
+        const item = records.find(r => r.id === id);
+        
+        if (item) {
+            document.getElementById('modalCurrentDue').innerText = `বর্তমান বাকি আছে: ৳${item.due}`;
+            document.getElementById('modalPaidInput').value = '0';
+            document.getElementById('modalDiscountInput').value = '0';
+            document.getElementById('paymentModal').style.display = 'flex';
+        }
+    }
+
+    function closeModal() {
+        document.getElementById('paymentModal').style.display = 'none';
+        currentEditingId = null;
+    }
+
+    function submitModalPayment() {
+        if (!currentEditingId) return;
+
+        let records = getRecords();
+        const item = records.find(r => r.id === currentEditingId);
+
+        if (item) {
+            const addedPaid = parseFloat(document.getElementById('modalPaidInput').value) || 0;
+            const addedDiscount = parseFloat(document.getElementById('modalDiscountInput').value) || 0;
+
+            if (addedPaid < 0 || addedDiscount < 0) {
+                alert("ঋণাত্মক সংখ্যা গ্রহণযোগ্য নয়।");
+                return;
+            }
+
+            if ((addedPaid + addedDiscount) > item.due) {
+                alert(`জমা ও ছাড়ের মোট পরিমাণ বর্তমান বাকির (৳${item.due}) চেয়ে বেশি হতে পারবে না।`);
+                return;
+            }
+
+            item.paid += addedPaid;
+            item.discount = (item.discount || 0) + addedDiscount;
+            item.due = item.fee - (item.paid + item.discount);
+            if (item.due < 0) item.due = 0;
+            item.profit = item.paid - item.cost;
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+            closeModal();
+            loadData();
+        }
+    }
+
+    // Filter Logic
+    function filterData() {
+        const dateVal = document.getElementById('filterDate').value;
+        const typeVal = document.getElementById('filterType').value;
+        const searchVal = document.getElementById('filterSearch').value.toLowerCase();
+
+        let records = getRecords();
+
+        if (dateVal) records = records.filter(r => r.date === dateVal);
+        if (typeVal) records = records.filter(r => r.type === typeVal);
+        if (searchVal) {
+            records = records.filter(r => r.name.toLowerCase().includes(searchVal) || r.number.includes(searchVal));
+        }
+
+        loadData(records);
+    }
+
+    function resetFilters() {
+        document.getElementById('filterDate').value = '';
+        document.getElementById('filterType').value = '';
+        document.getElementById('filterSearch').value = '';
+        loadData();
+    }
+
+    function deleteRecord(id) {
+        if (confirm('আপনি কি এই রেকর্ডটি মুছে ফেলতে চান?')) {
+            let records = getRecords();
+            records = records.filter(r => r.id !== id);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+            loadData();
+        }
+    }
+
+    // Backup & Restore Functions
+    function exportBackup() {
+        const records = getRecords();
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(records));
+        const link = document.createElement('a');
+        link.setAttribute("href", dataStr);
+        link.setAttribute("download", `Digital_Center_Backup_${new Date().toISOString().slice(0,10)}.json`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+    }
+
+    function importBackup(event) {
+        const fileReader = new FileReader();
+        fileReader.onload = function(e) {
+            try {
+                const importedRecords = JSON.parse(e.target.result);
+                if (Array.isArray(importedRecords)) {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(importedRecords));
+                    alert('ডাটা সফলভাবে ব্যাকআপ থেকে রিকভার করা হয়েছে!');
+                    loadData();
+                }
+            } catch (err) {
+                alert('ভুল ব্যাকআপ ফাইল সিলেক্ট করেছেন!');
+            }
+        };
+        fileReader.readAsText(event.target.files[0]);
+    }
+
+    // Export CSV
+    function exportCSV() {
+        const records = getRecords();
+        if (records.length === 0) return alert('কোন ডাটা নেই!');
+
+        let csv = "data:text/csv;charset=utf-8,\uFEFF";
+        csv += "ধরন,নাম,আইডি,তারিখ,ঠিকানা,মোট ফি,জমা,ছাড়,বাকি,লাভ,স্ট্যাটাস\n";
+
+        records.forEach(r => {
+            csv += `"${r.type}","${r.name}","${r.number}","${r.date}","${r.address}",${r.fee},${r.paid},${r.discount || 0},${r.due},${r.profit},"${r.status || 'পেন্ডিং'}"\n`;
+        });
+
+        const link = document.createElement("a");
+        link.setAttribute("href", encodeURI(csv));
+        link.setAttribute("download", `Data_Report_${new Date().toISOString().slice(0,10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+    }
+</script>
+
+</body>
+</html>

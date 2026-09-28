@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>প্রত্যয়ন পত্র জেনারেটর</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Noto Serif Bengali', serif;
+            background-color: #f1f5f9;
+            display: flex;
+            flex-direction: column-reverse; /* ইনপুট ফর্মটি প্রথমে/উপরে দেখাবে */
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* প্রিভিউ এরিয়া */
+        .preview-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+
+        /* স্ট্যান্ডার্ড A4 লেআউট */
+        .a4-page {
+            width: 210mm;
+            height: 297mm;
+            background-color: #ffffff;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding: 25mm 30mm 25mm 30mm;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            color: #000000;
+        }
+
+        .cert-title {
+            text-align: center;
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 20mm;
+            letter-spacing: 1px;
+            text-decoration: underline;
+            text-underline-offset: 8px;
+        }
+
+        .cert-body {
+            font-size: 21px;
+            line-height: 2.3;
+            text-align: justify;
+            text-indent: 50px;
+        }
+
+        .cert-closing {
+            font-size: 21px;
+            margin-top: 20mm;
+            text-indent: 50px;
+        }
+
+        /* স্বাক্ষর ও সিলের এরিয়া */
+        .seal-wrapper {
+            display: flex;
+            justify-content: flex-end;
+            padding-right: 10mm;
+            margin-top: 5mm;
+        }
+
+        .seal-container {
+            width: 280px;
+            height: 180px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: visible;
+        }
+
+        .seal-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transform: scale(1.15);
+            mix-blend-mode: multiply;
+        }
+
+        /* কন্ট্রোল প্যানেল/ফর্ম */
+        .form-container {
+            width: 210mm;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            padding: 35px;
+            border: 1px solid #cbd5e1;
+            margin-bottom: 40px;
+            margin-top: 20px;
+        }
+
+        .form-container h2 {
+            font-size: 18px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #0284c7;
+            padding-bottom: 8px;
+            color: #0284c7;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #334155;
+        }
+
+        input[type="text"], input[type="file"], select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background-color: #f8fafc;
+            color: #1e293b;
+            font-family: 'Noto Serif Bengali', serif;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        input[type="text"]:focus, select:focus {
+            border-color: #0284c7;
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+        }
+
+        /* টিক চিহ্নের স্টাইল */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            color: #334155;
+        }
+
+        .checkbox-container input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .custom-field {
+            margin-top: 8px;
+            display: none;
+        }
+
+        .btn-print {
+            grid-column: span 2;
+            width: 100%;
+            background-color: #0284c7;
+            color: #fff;
+            border: none;
+            padding: 14px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-family: 'Noto Serif Bengali', serif;
+            transition: background 0.2s;
+        }
+
+        .btn-print:hover {
+            background-color: #0369a1;
+        }
+
+        /* প্রিন্ট মিডিয়া ফরম্যাটিং */
+        @media print {
+            @page {
+                size: A4;
+                margin: 0;
+            }
+            body {
+                background: #fff;
+                padding: 0;
+                flex-direction: column;
+            }
+            .form-container {
+                display: none !important;
+            }
+            .preview-container {
+                margin-bottom: 0 !important;
+                padding: 0 !important;
+            }
+            .a4-page {
+                box-shadow: none !important;
+                width: 210mm;
+                height: 297mm;
+                padding: 25mm 30mm 25mm 30mm !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- প্রিভিউ এরিয়া (নিচে) -->
+    <div class="preview-container">
+        <div class="a4-page">
+            <div class="cert-title">প্রত্যয়ন পত্র</div>
+            
+            <div class="cert-body">
+                এই মর্মে প্রত্যয়ন করা যাইতেছে যে, নাম: <span id="outName" style="font-weight: bold;">মোছা: লিয়া আক্তার</span>, 
+                পিতা মো: <span id="outFather">হাবিব</span>, মাতা: <span id="outMother">তাছমিনা</span>, 
+                গ্রাম: <span id="outVillage">ইটনা কচুয়ারহাটি</span>, ডাকঘর: <span id="outPost">ইটনা</span>, 
+                ইউনিয়ন: <span id="outUnion">ইটনা</span>, ওয়ার্ড নং-<span id="outWard">০৪</span>, 
+                উপজেলা: ইটনা, জেলা: কিশোরগঞ্জ। তাহার <span id="outBasis">ইপি আই কার্ড</span> অনুযায়ী তার জন্ম তারিখঃ <span id="outDob">০৭-০১-২০০৮খ্রিঃ।</span>
+            </div>
+
+            <div class="cert-closing">
+                আমি তার সর্বাঙ্গীন সাফল্য কামনা করি।
+            </div>
+
+            <!-- সিলের ছবি প্রদর্শনের এরিয়া -->
+            <div class="seal-wrapper">
+                <div class="seal-container">
+                    <img id="outSeal" src="" alt="" style="display: none;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- তথ্য ইনপুট ফর্ম (উপরে) -->
+    <div class="form-container">
+        <h2>তথ্য ইনপুট ফর্ম</h2>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>নাম:</label>
+                <input type="text" id="inName" value="মোছা: লিয়া আক্তার" oninput="render()">
+            </div>
+
+            <div class="form-group">
+                <label>পিতার নাম (মো: বাদে শুধু নাম):</label>
+                <input type="text" id="inFather" value="হাবিব" oninput="render()">
+            </div>
+
+            <div class="form-group">
+                <label>মাতার নাম:</label>
+                <input type="text" id="inMother" value="তাছমিনা" oninput="render()">
+            </div>
+
+            <div class="form-group">
+                <label>গ্রাম:</label>
+                <input type="text" id="inVillage" value="ইটনা কচুয়ারহাটি" oninput="render()">
+            </div>
+
+            <div class="form-group">
+                <label>ডাকঘর:</label>
+                <select id="selPost" onchange="checkCustom('selPost', 'divPost')">
+                    <option value="ইটনা" selected>ইটনা</option>
+                    <option value="custom">অন্যান্য (নিচে লিখুন)</option>
+                </select>
+                <div id="divPost" class="custom-field">
+                    <input type="text" id="inCustomPost" placeholder="ডাকঘরের নাম" oninput="render()">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>ইউনিয়ন:</label>
+                <select id="selUnion" onchange="checkCustom('selUnion', 'divUnion')">
+                    <option value="ইটনা" selected>ইটনা</option>
+                    <option value="custom">অন্যান্য (নিচে লিখুন)</option>
+                </select>
+                <div id="divUnion" class="custom-field">
+                    <input type="text" id="inCustomUnion" placeholder="ইউনিয়নের নাম" oninput="render()">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>ওয়ার্ড নং (ইংরেজি লিখলেও বাংলা হবে):</label>
+                <input type="text" id="inWard" value="04" oninput="render()">
+            </div>
+
+            <div class="form-group">
+                <label>জন্ম তারিখ কিসের ভিত্তিতে:</label>
+                <select id="selBasis" onchange="checkCustom('selBasis', 'divBasis')">
+                    <option value="ইপি আই কার্ড" selected>ইপি আই কার্ড</option>
+                    <option value="হাতের লিখা জন্ম নিবন্ধন">হাতের লিখা জন্ম নিবন্ধন</option>
+                    <option value="জাতীয় পরিচয় পত্র">জাতীয় পরিচয় পত্র</option>
+                    <option value="custom">অন্যান্য (নিচে লিখুন)</option>
+                </select>
+                <div id="divBasis" class="custom-field">
+                    <input type="text" id="inCustomBasis" placeholder="ভিত্তির নাম লিখুন" oninput="render()">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>জন্ম তারিখ (ইংরেজি লিখলেও বাংলা হবে):</label>
+                <input type="text" id="inDob" value="07-01-2008" oninput="render()">
+            </div>
+
+            <div class="form-group">
+                <label>স্বাক্ষর ও সিল অপশন:</label>
+                <label class="checkbox-container">
+                    <input type="checkbox" id="chkDefaultSeal" onchange="toggleDefaultSeal()">
+                    সেইভ করা ডিফল্ট স্বাক্ষর ব্যবহার করুন
+                </label>
+                <input type="file" id="inSeal" accept="image/*" onchange="loadSeal(event)">
+            </div>
+
+            <button class="btn-print" onclick="window.print()">প্রত্যয়ন পত্রটি প্রিন্ট করুন</button>
+        </div>
+    </div>
+
+    <script>
+        const defaultSealUrl = "https://i.ibb.co.com/d0zqxcXW/image-1fb646.png";
+
+        // ইংরেজি সংখ্যাকে বাংলায় কনভার্ট করার ফাংশন
+        function engToBanglaNums(inputStr) {
+            const numbers = {
+                '0': '০', '1': '১', '2': '২', '3': '৩', '4': '৪',
+                '5': '৫', '6': '৬', '7': '৭', '8': '৮', '9': '৯'
+            };
+            let output = '';
+            for (let i = 0; i < inputStr.length; i++) {
+                if (numbers[inputStr[i]] !== undefined) {
+                    output += numbers[inputStr[i]];
+                } else {
+                    output += inputStr[i];
+                }
+            }
+            return output;
+        }
+
+        function checkCustom(selectId, divId) {
+            var select = document.getElementById(selectId);
+            var div = document.getElementById(divId);
+            if (select.value === 'custom') {
+                div.style.display = 'block';
+            } else {
+                div.style.display = 'none';
+            }
+            render();
+        }
+
+        function toggleDefaultSeal() {
+            var chk = document.getElementById('chkDefaultSeal');
+            var fileInput = document.getElementById('inSeal');
+            var output = document.getElementById('outSeal');
+
+            if (chk.checked) {
+                fileInput.value = ""; 
+                fileInput.disabled = true; 
+                output.src = defaultSealUrl;
+                output.style.display = 'block';
+            } else {
+                fileInput.disabled = false;
+                output.src = "";
+                output.style.display = 'none';
+            }
+        }
+
+        function loadSeal(event) {
+            var output = document.getElementById('outSeal');
+            var chk = document.getElementById('chkDefaultSeal');
+            
+            if(event.target.files && event.target.files[0]) {
+                chk.checked = false; 
+                output.src = URL.createObjectURL(event.target.files[0]);
+                output.style.display = 'block';
+            } else {
+                output.style.display = 'none';
+            }
+        }
+
+        function render() {
+            document.getElementById('outName').innerText = document.getElementById('inName').value;
+            document.getElementById('outFather').innerText = document.getElementById('inFather').value;
+            document.getElementById('outMother').innerText = document.getElementById('inMother').value;
+            document.getElementById('outVillage').innerText = engToBanglaNums(document.getElementById('inVillage').value);
+            document.getElementById('outWard').innerText = engToBanglaNums(document.getElementById('inWard').value);
+            
+            // জন্ম তারিখ এখন অটো কনভার্ট হয়ে বাংলায় দেখাবে
+            let dobValue = document.getElementById('inDob').value;
+            // ইউজার যদি ভুলে আগে থেকেই খ্রিঃ বা ডট লিখে ফেলে, তা আগে ডিলিট করা
+            dobValue = dobValue.replace(/খ্রিঃ।/g, '').replace(/খ্রিঃ/g, '').replace(/।/g, '').trim();
+            document.getElementById('outDob').innerText = engToBanglaNums(dobValue) + "খ্রিঃ।";
+
+            if (document.getElementById('selPost').value === 'custom') {
+                document.getElementById('outPost').innerText = engToBanglaNums(document.getElementById('inCustomPost').value) || '......';
+            } else {
+                document.getElementById('outPost').innerText = document.getElementById('selPost').value;
+            }
+
+            if (document.getElementById('selUnion').value === 'custom') {
+                document.getElementById('outUnion').innerText = engToBanglaNums(document.getElementById('inCustomUnion').value) || '......';
+            } else {
+                document.getElementById('outUnion').innerText = document.getElementById('selUnion').value;
+            }
+
+            if (document.getElementById('selBasis').value === 'custom') {
+                document.getElementById('outBasis').innerText = document.getElementById('inCustomBasis').value || '......';
+            } else {
+                document.getElementById('outBasis').innerText = document.getElementById('selBasis').value;
+            }
+        }
+
+        window.onload = function() {
+            render();
+        };
+    </script>
+</body>
+</html>

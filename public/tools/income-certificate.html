@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <title>আয় বিবরণী প্রত্যয়ন - ইটনা উপজেলা</title>
+    <style>
+        @import url('https://fonts.cdnfonts.com/css/solaimanlipi');
+        :root { --primary-green: #006a4e; --navy: #000080; }
+        
+        body { font-family: 'SolaimanLipi', Arial, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; }
+
+        /* অফিশিয়াল পেড ডিজাইন */
+        #pad { 
+            display: none; width: 210mm; min-height: 297mm; 
+            margin: 0 auto; padding: 15mm 25mm; 
+            border: 1px solid #ddd; background: #fff !important; 
+            position: relative; box-sizing: border-box; color: #000;
+        }
+        
+        .page-border {
+            position: absolute; top: 10mm; bottom: 10mm; left: 10mm; right: 10mm;
+            border: 2px solid #000; pointer-events: none;
+        }
+
+        .watermark { 
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+            width: 450px; opacity: 0.05; z-index: 0; 
+        }
+
+        .header-top { display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 1; margin-bottom: 5px; }
+        .govt-seal { text-align: center; flex-grow: 1; }
+        .govt-seal img { width: 55px; }
+        .govt-seal h2 { font-size: 16px; margin: 5px 0 2px; font-weight: bold; }
+        .qr-top, .union-logo { width: 75px; height: 75px; object-fit: contain; }
+
+        .header-main { text-align: center; border-bottom: 1.5px solid var(--primary-green); padding-bottom: 5px; margin-bottom: 10px; position: relative; z-index: 1; }
+        .header-main h1 { color: var(--navy); margin: 5px 0; font-size: 22px; letter-spacing: 0.5px; }
+        .header-main p { margin: 2px 0; font-weight: bold; font-size: 13px; }
+
+        .meta-info { display: flex; justify-content: space-between; margin: 15px 0; font-weight: bold; font-size: 14px; }
+        
+        .cert-title { 
+            text-align: center; margin: 25px auto; 
+            font-size: 20px; font-weight: bold; 
+            text-decoration: underline; text-underline-offset: 5px;
+        }
+
+        .content-area { 
+            position: relative; z-index: 1; 
+            line-height: 2.0; font-size: 17.5px; 
+            text-align: justify; margin-top: 30px;
+        }
+        .content-area b { font-weight: bold; }
+
+        .signature-area { margin-top: 70px; display: flex; justify-content: flex-end; position: relative; z-index: 1; }
+        .sig-block { text-align: center; font-size: 15px; line-height: 1.3; width: 220px; }
+
+        .verify-qr-area {
+            position: absolute; bottom: 35mm; left: 50%; transform: translateX(-50%);
+            text-align: center; font-size: 11px; color: #555;
+        }
+        .verify-qr-area img { width: 85px; height: 85px; display: block; margin: 0 auto 5px; border: 1px solid #eee; padding: 2px; }
+
+        .no-print { max-width: 850px; margin: 0 auto 30px; background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .input-group { display: flex; flex-direction: column; }
+        label { font-weight: bold; font-size: 12px; margin-bottom: 4px; color: #444; }
+        input, select { padding: 9px; border: 1px solid #bbb; border-radius: 5px; font-size: 13px; outline: none; }
+        .main-btn { background: var(--primary-green); color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; font-size: 16px; margin-top: 15px; }
+
+        @media print {
+            .no-print, #printTools { display: none !important; }
+            body { background: white; padding: 0; }
+            #pad { display: block !important; border: none; box-shadow: none; margin: 0; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <h3 style="text-align:center; color: var(--primary-green); margin-top: 0;">📋 আয় প্রত্যয়ন জেনারেটর</h3>
+    <div class="grid-3">
+        <div class="input-group">
+            <label>ইউনিয়ন পরিষদ:</label>
+            <select id="unionSelect">
+                <option value="">সিলেক্ট করুন</option>
+                <option value="১নং রায়টুটী|মোহাম্মদ এনামূল হক খান মিল্কী|রায়টুটী-২৩৯০|https://i.postimg.cc/SKR3qHLn/Untitled-6-copy-6.jpg">১নং রায়টুটী</option>
+                <option value="২নং ধনপুর|প্রদীপ কুমার দাস|ধনপুর-২৩৯০|https://i.postimg.cc/Pq7cqKKr/Untitled-6-copy-4.jpg">২নং ধনপুর</option>
+                <option value="৩নং মৃগা|মোঃ দারুল ইসলাম|মৃগা-২৩৯০|https://i.postimg.cc/VNhTN44N/Untitled-6-copy-3.jpg">৩নং মৃগা</option>
+                <option value="৪নং ইটনা|মোঃ সোহাগ মিয়া|ইটনা-২৩৯০|https://i.postimg.cc/pdS7dkkT/itana-i'una-ya-na-para-sada.jpg">৪নং ইটনা</option>
+                <option value="৫নং বড়িবাড়ি|আঃ ছাত্তার|বাদলা-২৩১০|https://i.postimg.cc/7LhdDj1G/Untitled-6-copy-8.jpg">৫নং বড়িবাড়ি</option>
+                <option value="৬নং বাদলা|আদিলুজ্জামান ভূঞা|বাদলা-২৩১০|https://i.postimg.cc/k5Gz9LNB/Untitled-6-copy-9.jpg">৬নং বাদলা</option>
+                <option value="৭নং এলংজুরী|রুবেল মিয়া|এলংজুরী-২৩৯০|https://i.postimg.cc/KYjwFC7K/Untitled-6-copy-5.jpg">৭নং এলংজুরী</option>
+                <option value="৮নং জয়সিদ্ধি|মোঃ মনির উদ্দিন|জয়সিদ্ধি-২৩৯০|https://i.postimg.cc/hGGvn43G/Untitled-6-copy.jpg">৮নং জয়সিদ্ধি</option>
+                <option value="৯নং চৌগাংগা|সাইফুল ইসলাম|চৌগাংগা-২৩৯০|https://i.postimg.cc/0N43NZZ9/Untitled-6-copy-7.jpg">৯নং চৌগাংগা</option>
+            </select>
+        </div>
+        <div class="input-group"><label>আবেদনকারীর নাম:</label><input type="text" id="s_name"></div>
+        <div class="input-group"><label>পিতার নাম:</label><input type="text" id="f_name"></div>
+        <div class="input-group"><label>মাতার নাম:</label><input type="text" id="m_name"></div>
+        <div class="input-group">
+            <label>পিতার পেশা:</label>
+            <select id="f_job">
+                <option value="কৃষক" selected>কৃষক</option>
+                <option value="জেলে">জেলে</option>
+                <option value="ব্যবসায়ী">ব্যবসায়ী</option>
+                <option value="প্রবাসী">প্রবাসী</option>
+                <option value="সরকারী চাকুরী">সরকারী চাকুরী</option>
+                <option value="বেসরকারী চাকুরী">বেসরকারী চাকুরী</option>
+                <option value="শ্রমিক">শ্রমিক</option>
+                <option value="অন্যান্য">অন্যান্য</option>
+            </select>
+        </div>
+        <div class="input-group"><label>গ্রাম:</label><input type="text" id="v_vill"></div>
+        <div class="input-group"><label>ওয়ার্ড নং:</label><input type="text" id="v_ward"></div>
+        <div class="input-group"><label>মাসিক আয়:</label><input type="number" id="v_income" oninput="autoCalculate()"></div>
+        <div class="input-group"><label>বার্ষিক আয়:</label><input type="text" id="v_yearly" readonly></div>
+        <div class="input-group" style="grid-column: span 3;"><label>বার্ষিক আয় কথায়:</label><input type="text" id="v_word" readonly style="background:#fffbe6; font-weight:bold;"></div>
+    </div>
+    <button class="main-btn" onclick="generate()">জেনারেট করুন</button>
+</div>
+
+<div id="pad">
+    <div class="page-border"></div>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/8/84/Government_Seal_of_Bangladesh.svg" class="watermark">
+    
+    <div class="header-top">
+        <img src="" id="p_qr_top" class="qr-top">
+        <div class="govt-seal">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/8/84/Government_Seal_of_Bangladesh.svg">
+            <h2>গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</h2>
+        </div>
+        <img id="p_union_logo" class="union-logo">
+    </div>
+
+    <div class="header-main">
+        <h1 id="p_union_title"></h1>
+        <p>উপজেলা: ইটনা, জেলা: কিশোরগঞ্জ।</p>
+    </div>
+
+    <div class="meta-info">
+        <div>স্মারক নং: <span id="p_sarok"></span></div>
+        <div>তারিখ: <span id="p_today"></span></div>
+    </div>
+
+    <div class="cert-title">আয় বিবরণী প্রত্যয়ন</div>
+
+    <div class="content-area">
+        এই মর্মে প্রত্যয়ন করা যাচ্ছে যে, <b><span id="d_s_name"></span></b>, পিতা: <b><span id="d_f_name"></span></b>, মাতা: <b><span id="d_m_name"></span></b>, গ্রাম: <b><span id="d_vill"></span></b>, ডাকঘর ও উপজেলা: ইটনা, জেলা: কিশোরগঞ্জ। তিনি অত্র ইউনিয়নের <b><span id="d_ward"></span></b> নং ওয়ার্ডের স্থায়ী বাসিন্দা ও জন্মসূত্রে বাংলাদেশের নাগরিক। তাঁহার পিতা <b><span id="d_f_name2"></span></b> পেশায় একজন <b><span id="d_job"></span></b> এবং তাঁহার মাসিক আয় <b><span id="d_income"></span>/- (<span id="d_m_word"></span>)</b> টাকা। সেই মর্মে তাঁহার সর্বমোট বার্ষিক আয় দাঁড়ায় <b><span id="d_yearly"></span>/-</b> (<b><span id="d_word"></span></b> টাকা মাত্র)। <br><br>
+        আমি তাঁহার উজ্জ্বল ভবিষ্যৎ ও সর্বাঙ্গীন মঙ্গল কামনা করছি।
+    </div>
+
+    <div class="signature-area">
+        <div class="sig-block">
+            <b>(<span id="p_chairman"></span>)</b><br>
+            চেয়ারম্যান<br>
+            <span id="p_union_footer"></span><br>
+            ইটনা, কিশোরগঞ্জ।
+        </div>
+    </div>
+
+    <div class="verify-qr-area">
+        <img src="" id="p_verify_qr">
+        <b>ভেরিফিকেশন কিউআর কোড</b>
+    </div>
+</div>
+
+<div id="printTools" style="display:none; text-align:center; margin-top: 20px; padding-bottom: 50px;">
+    <button onclick="window.print()" style="padding:12px 40px; background:#1a73e8; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">🖨️ প্রিন্ট করুন</button>
+    <button onclick="location.reload()" style="padding:12px 20px; background:#666; color:white; border:none; border-radius:8px; cursor:pointer; margin-left:10px;">⬅️ ব্যাকে যান</button>
+</div>
+
+<script>
+    const bnNums = {'0':'০','1':'১','2':'২','3':'৩','4':'৪','5':'৫','6':'৬','7':'৭','8':'৮','9':'৯'};
+    function toBnNum(n) { return n.toString().replace(/[0-9]/g, s => bnNums[s]); }
+
+    // একদম নির্ভুল ১-৯৯ পর্যন্ত অ্যারে
+    const words = [
+        "", "এক", "দুই", "তিন", "চার", "পাঁচ", "ছয়", "সাত", "আট", "নয়", "দশ",
+        "এগারো", "বারো", "তেরো", "চৌদ্দ", "পনেরো", "ষোলো", "সতেরো", "আঠারো", "উনিশ", "বিশ",
+        "একুশ", "বাইশ", "তেইশ", "চব্বিশ", "পঁচিশ", "ছাব্বিশ", "সাতাশ", "আটাশ", "ঊনত্রিশ", "ত্রিশ",
+        "একত্রিশ", "বত্রিশ", "তেত্রিশ", "চৌত্রিশ", "পঁয়ত্রিশ", "ছত্রিশ", "সাঁইত্রিশ", "আটত্রিশ", "ঊনচল্লিশ", "চল্লিশ",
+        "একচল্লিশ", "বিয়াল্লিশ", "তেতাল্লিশ", "চুয়াল্লিশ", "পঁয়তাল্লিশ", "ছেচল্লিশ", "সাতচল্লিশ", "আটচল্লিশ", "ঊনপঞ্চাশ", "পঞ্চাশ",
+        "একান্ন", "বায়ান্ন", "তিপ্পান্ন", "চুয়ান্ন", "পঞ্চান্ন", "ছাপ্পান্ন", "সাতান্ন", "আটান্ন", "ঊনষাট", "ষাট",
+        "একষট্টি", "বাষট্টি", "তেষট্টি", "চৌষট্টি", "পয়ষট্টি", "ছেষট্টি", "সাতষট্টি", "আটষট্টি", "ঊনসত্তর", "সত্তর",
+        "একাত্তর", "বাহাত্তর", "তিয়াত্তর", "চুয়াত্তর", "পঁচাত্তর", "ছিয়াত্তর", "সাতাত্তর", "আটাত্তর", "ঊনআশি", "আশি",
+        "একাশি", "বিরাশি", "তিরাশি", "চুরাশি", "পঁচাশি", "ছিয়াশি", "সাতাশি", "আটাশি", "ঊননব্বই", "নব্বই",
+        "একানব্বই", "বিয়ানব্বই", "তিয়ানব্বই", "চুনব্বই", "পঁচানব্বই", "ছিয়ানব্বই", "সাতানব্বই", "আটানব্বই", "নিরানব্বই"
+    ];
+
+    function nToBnWords(n) {
+        if (n == 0) return "শূন্য";
+        let str = "";
+
+        if (n >= 10000000) {
+            str += nToBnWords(Math.floor(n / 10000000)) + " কোটি ";
+            n %= 10000000;
+        }
+        if (n >= 100000) {
+            str += words[Math.floor(n / 100000)] + " লক্ষ ";
+            n %= 100000;
+        }
+        if (n >= 1000) {
+            str += words[Math.floor(n / 1000)] + " হাজার ";
+            n %= 1000;
+        }
+        if (n >= 100) {
+            str += words[Math.floor(n / 100)] + "শত ";
+            n %= 100;
+        }
+        if (n > 0) {
+            str += words[n];
+        }
+        return str.trim();
+    }
+
+    function autoCalculate() {
+        const income = parseFloat(document.getElementById('v_income').value) || 0;
+        const yearly = income * 12;
+        document.getElementById('v_yearly').value = yearly;
+        document.getElementById('v_word').value = nToBnWords(yearly) + " টাকা মাত্র";
+    }
+
+    function generate() {
+        const val = document.getElementById('unionSelect').value.split('|');
+        if(!val[0]) return alert("ইউনিয়ন সিলেক্ট করুন");
+
+        document.getElementById('d_s_name').innerText = document.getElementById('s_name').value;
+        document.getElementById('d_f_name').innerText = document.getElementById('f_name').value;
+        document.getElementById('d_f_name2').innerText = document.getElementById('f_name').value;
+        document.getElementById('d_m_name').innerText = document.getElementById('m_name').value;
+        document.getElementById('d_vill').innerText = document.getElementById('v_vill').value;
+        document.getElementById('d_ward').innerText = toBnNum(document.getElementById('v_ward').value);
+        document.getElementById('d_job').innerText = document.getElementById('f_job').value;
+        
+        const monthlyIncome = parseFloat(document.getElementById('v_income').value) || 0;
+        document.getElementById('d_income').innerText = toBnNum(monthlyIncome);
+        document.getElementById('d_m_word').innerText = nToBnWords(monthlyIncome) + " টাকা মাত্র";
+        
+        const yearlyIncome = monthlyIncome * 12;
+        document.getElementById('d_yearly').innerText = toBnNum(yearlyIncome);
+        document.getElementById('d_word').innerText = nToBnWords(yearlyIncome);
+
+        document.getElementById('p_union_title').innerText = val[0] + " ইউনিয়ন পরিষদ কার্যালয়";
+        document.getElementById('p_union_footer').innerText = val[0] + " ইউনিয়ন পরিষদ";
+        document.getElementById('p_chairman').innerText = val[1];
+        document.getElementById('p_union_logo').src = val[3];
+        document.getElementById('p_today').innerText = toBnNum(new Date().toLocaleDateString('en-GB'));
+        
+        const sarok = toBnNum("ইউপ/ইট/" + Math.floor(100 + Math.random() * 900) + "/২০২৬");
+        document.getElementById('p_sarok').innerText = sarok;
+        
+        const qrData = `Verified: ${document.getElementById('s_name').value}, Yearly: ${yearlyIncome}, Sarok: ${sarok}`;
+        document.getElementById('p_qr_top').src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${sarok}`;
+        document.getElementById('p_verify_qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(qrData)}`;
+        
+        document.querySelector('.no-print').style.display = 'none';
+        document.getElementById('pad').style.display = 'block';
+        document.getElementById('printTools').style.display = 'block';
+    }
+</script>
+</body>
+</html>

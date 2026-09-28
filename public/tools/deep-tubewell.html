@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <title>গভীর নলকূপের আবেদনপত্র জেনারেটর</title>
+    <style>
+        @import url('https://fonts.cdnfonts.com/css/solaimanlipi');
+        
+        body { font-family: 'SolaimanLipi', Arial, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; }
+        
+        /* Input Form Style */
+        .form-container { 
+            max-width: 800px; margin: 0 auto 30px; background: #fff; padding: 25px; 
+            border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+        }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .input-group { display: flex; flex-direction: column; margin-bottom: 10px; }
+        label { font-weight: bold; font-size: 14px; margin-bottom: 5px; color: #333; }
+        input, select { padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        .full-width { grid-column: span 2; }
+        button { 
+            background: #27ae60; color: white; border: none; padding: 12px; 
+            border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; font-weight: bold;
+        }
+
+        /* Letter Pad Style */
+        #application-pad { 
+            display: none; width: 210mm; min-height: 297mm; 
+            margin: 0 auto; padding: 25mm 20mm; 
+            background: white; box-sizing: border-box; 
+            line-height: 1.8; color: #000; font-size: 18px;
+        }
+
+        .subject { font-weight: bold; margin-top: 20px; text-decoration: underline; }
+        .content { margin-top: 25px; text-align: justify; }
+        .signature-section { margin-top: 60px; float: right; text-align: center; min-width: 250px; }
+        
+        .print-btn-area { text-align: center; margin: 20px 0; display: none; }
+        .btn-print { background: #2980b9; color: white; padding: 10px 30px; border-radius: 5px; text-decoration: none; cursor: pointer; margin: 5px; }
+
+        @media print {
+            .form-container, .print-btn-area { display: none !important; }
+            #application-pad { display: block !important; margin: 0; padding: 15mm; }
+            body { background: white; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2 style="text-align:center; color: #27ae60;">🚰 গভীর নলকূপের আবেদন জেনারেটর</h2>
+    <div class="grid">
+        <div class="input-group"><label>আবেদনকারীর নাম:</label><input type="text" id="name" value="মোঃ আনু মিয়া"></div>
+        <div class="input-group"><label>পদবী/পরিচয়:</label><input type="text" id="designation" value="ইউপি সদস্য, ইটনা সদর ইউপি"></div>
+        <div class="input-group"><label>পিতার নাম:</label><input type="text" id="father" value="মারু মিয়া"></div>
+        <div class="input-group"><label>মাতার নাম:</label><input type="text" id="mother" value="আছিয়া খাতুন"></div>
+        <div class="input-group"><label>গ্রাম:</label><input type="text" id="village" value="পশ্চিমগ্রাম নয়াহাটি"></div>
+        <div class="input-group"><label>ওয়ার্ড নং:</label><input type="text" id="ward" value="০৩"></div>
+        <div class="input-group"><label>উপজেলা:</label><input type="text" id="upazila" value="ইটনা"></div>
+        <div class="input-group"><label>জেলা:</label><input type="text" id="dist" value="কিশোরগঞ্জ"></div>
+        <div class="input-group"><label>পরিবার সংখ্যা:</label><input type="text" id="families" value="১০"></div>
+        <div class="input-group"><label>মোবাইল নাম্বার:</label><input type="text" id="mobile" value="০১৭১১-৯৯৮২৭৭"></div>
+    </div>
+    <button onclick="generateLetter()">আবেদনপত্র তৈরি করুন</button>
+</div>
+
+<div class="print-btn-area" id="printTools">
+    <button class="btn-print" onclick="window.print()">🖨️ প্রিন্ট করুন</button>
+    <button class="btn-print" style="background:#7f8c8d" onclick="location.reload()">🔄 নতুন করে লিখুন</button>
+</div>
+
+<div id="application-pad">
+    <div>বরাবর,</div>
+    <div style="margin-left: 40px; font-weight: bold;">উপজেলা নির্বাহী অফিসার</div>
+    <div style="margin-left: 40px;"><span id="out_upazila1"></span>, <span id="out_dist1"></span>।</div>
+
+    <div class="subject">বিষয়: আর্সেনিক মুক্ত গভীর নলকূপের জন্য আবেদন।</div>
+
+    <div style="margin-top: 20px;">মহাত্মন,</div>
+
+    <div class="content">
+        যথাবিহিত সম্মান প্রদর্শন পূর্বক বিনীত নিবেদন এই যে, আমি <span id="out_name" style="font-weight:bold"></span> (<span id="out_desig"></span>, ওয়ার্ড নং- <span id="out_ward"></span>), পিতা: <span id="out_father"></span>, মাতা: <span id="out_mother"></span>, গ্রাম: <span id="out_village"></span>, পোঃ ও উপজেলা: <span id="out_upazila2"></span>, জেলা: <span id="out_dist2"></span>। আমাদের বাড়িতে <span id="out_fam" style="font-weight:bold"></span>টি পরিবারের জন্য কোন ধরণের আর্সেনিক মুক্ত গভীর নলকূপ নাই। তাই আমাদের পরিবার আর্সেনিক মুক্ত গভীর নলকূপের পানি পান করতে পারছি না। ফলে আর্সেনিক মুক্ত পানির অভাবে কলেরা, টাইফয়েড, আমাশয় জনিত জটিল রোগে দিন দিন আক্রান্ত হচ্ছে আমাদের পরিবারের সদস্যগণ। তাই আমাদের বাড়িতে ১টি আর্সেনিক মুক্ত গভীর নলকূপ খুবই প্রয়োজন।
+    </div>
+
+    <div class="content">
+        অতএব, মহোদয়ের সমীপে আকুল আবেদন এই যে, আমাদের <span id="out_fam2"></span>টি পরিবারের জন্য ১টি আর্সেনিক মুক্ত গভীর নলকূপ প্রদানে আপনার সদয় মর্জি হয়।
+    </div>
+
+    <div class="signature-section">
+        বিনীত নিবেদক<br><br><br>
+        <b id="out_name2"></b><br>
+        <span id="out_desig2"></span><br>
+        <span id="out_upazila3"></span> উপজেলা পরিষদ<br>
+        মোবাইল নাম্বার: <span id="out_mob"></span>
+    </div>
+</div>
+
+<script>
+    function generateLetter() {
+        // Get values
+        const name = document.getElementById('name').value;
+        const desig = document.getElementById('designation').value;
+        const father = document.getElementById('father').value;
+        const mother = document.getElementById('mother').value;
+        const village = document.getElementById('village').value;
+        const ward = document.getElementById('ward').value;
+        const upazila = document.getElementById('upazila').value;
+        const dist = document.getElementById('dist').value;
+        const families = document.getElementById('families').value;
+        const mobile = document.getElementById('mobile').value;
+
+        // Set values to Pad
+        document.getElementById('out_name').innerText = name;
+        document.getElementById('out_name2').innerText = name;
+        document.getElementById('out_desig').innerText = desig;
+        document.getElementById('out_desig2').innerText = desig;
+        document.getElementById('out_father').innerText = father;
+        document.getElementById('out_mother').innerText = mother;
+        document.getElementById('out_village').innerText = village;
+        document.getElementById('out_ward').innerText = ward;
+        document.getElementById('out_upazila1').innerText = upazila;
+        document.getElementById('out_upazila2').innerText = upazila;
+        document.getElementById('out_upazila3').innerText = upazila;
+        document.getElementById('out_dist1').innerText = dist;
+        document.getElementById('out_dist2').innerText = dist;
+        document.getElementById('out_fam').innerText = families;
+        document.getElementById('out_fam2').innerText = families;
+        document.getElementById('out_mob').innerText = mobile;
+
+        // Show Pad and Hide Form
+        document.querySelector('.form-container').style.display = 'none';
+        document.getElementById('application-pad').style.display = 'block';
+        document.getElementById('printTools').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>

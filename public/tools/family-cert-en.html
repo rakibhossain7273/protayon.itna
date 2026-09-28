@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Family Certificate Pro - Itna</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        :root { --bd-green: #006a4e; --gold: #b8860b; --bg: #f4f7f6; }
+        body { font-family: 'SolaimanLipi', Arial, sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        
+        .setup-box { border: 1px solid #ddd; padding: 20px; border-radius: 10px; margin-bottom: 20px; background: #fff; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .input-group { display: flex; flex-direction: column; margin-bottom: 10px; }
+        label { font-weight: bold; font-size: 13px; margin-bottom: 5px; }
+        input, select { padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
+
+        .warish-row { border-bottom: 1px dashed #ccc; padding: 15px 0; position: relative; }
+        .btn-add { background: var(--bd-green); color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; font-weight: bold;}
+        
+        .history-section { margin-top: 30px; }
+        table.hist-table { width: 100%; border-collapse: collapse; background: white; margin-top: 10px;}
+        table.hist-table th, table.hist-table td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 14px;}
+        .btn-action { padding: 6px 12px; cursor: pointer; border: none; border-radius: 4px; margin-right: 5px; font-weight: bold;}
+        .btn-edit { background: #ff9800; color: white; }
+        .btn-del { background: #f44336; color: white; }
+
+        /* Pad Design */
+        #pad { display: none; width: 210mm; min-height: 297mm; margin: 20px auto; padding: 15mm 20mm; border: 8px double var(--gold); background: #fff; position: relative; box-sizing: border-box; color: #000;}
+        .header-main { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--bd-green); padding-bottom: 10px; }
+        .header-logo { width: 75px; height: 75px; object-fit: contain; }
+        .cert-title { text-align: center; margin: 20px auto; border: 1.5px solid var(--gold); width: fit-content; padding: 5px 40px; border-radius: 25px; font-size: 20px; font-weight: bold; text-transform: uppercase; }
+        .warish-table { width: 100%; border-collapse: collapse; margin-top: 15px; position: relative; z-index: 1; }
+        .warish-table th, .warish-table td { border: 1px solid black; padding: 6px; text-align: center; font-size: 10pt; }
+        .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 400px; opacity: 0.08; z-index: 0; }
+
+        .no-print { display: block; }
+        @media print {
+            .no-print { display: none !important; }
+            #pad { display: block !important; margin: 0; border: 8px double var(--gold) !important; }
+            body { background: white; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container no-print">
+    <h2 style="color: var(--bd-green); text-align: center;">📜 Family Certificate Management System (Itna)</h2>
+    
+    <div class="setup-box">
+        <h4>১. ইউনিয়ন ও সাধারণ তথ্য (English Only)</h4>
+        <div class="grid-3">
+            <div class="input-group">
+                <label>Select Union</label>
+                <select id="unionSelect">
+                    <option value="1 No Raytuti|Mohammad Enamul Haque Khan Milky|Raytuti-2390">1 No Raytuti</option>
+                    <option value="2 No Dhanpur|Pradip Kumar Das|Dhanpur-2390">2 No Dhanpur</option>
+                    <option value="3 No Mriga|Md. Darul Islam|Mriga-2390">3 No Mriga</option>
+                    <option value="4 No Itna|Md. Sohag Mia|Itna-2390" selected>4 No Itna</option>
+                    <option value="5 No Boribari|A. Sattar|Badla-2310">5 No Boribari</option>
+                    <option value="6 No Badla|Adiluzzaman Bhuiyan|Badla-2310">6 No Badla</option>
+                    <option value="7 No Elongjuri|Rubel Mia|Elongjuri-2390">7 No Elongjuri</option>
+                    <option value="8 No Joysiddhi|Md. Monir Uddin|Joysiddhi-2390">8 No Joysiddhi</option>
+                    <option value="9 No Chauganga|Saiful Islam|Chauganga-2390">9 No Chauganga</option>
+                </select>
+            </div>
+            <div class="input-group"><label>Memorial No</label><input type="text" id="memorialInput" placeholder="e.g. Gan/Nan/itna/2025-01"></div>
+            <div class="input-group"><label>Family Head Name</label><input type="text" id="headName" placeholder="e.g. Md Adiful Islam"></div>
+        </div>
+    </div>
+
+    <div class="setup-box">
+        <h4>২. মেম্বারদের তালিকা</h4>
+        <div id="memberContainer"></div>
+        <button class="btn-add" onclick="addMemberRow()">+ Add New Member</button>
+    </div>
+
+    <div style="text-align: center; gap: 10px; display: flex; justify-content: center;">
+        <button onclick="saveAndGenerate()" style="background: var(--bd-green); color: white; padding: 15px 40px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;">Generate & Save History</button>
+        <button onclick="downloadBackup()" style="background: #2196F3; color: white; padding: 15px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">Download JSON Backup</button>
+    </div>
+
+    <div class="history-section">
+        <h3>History (সংরক্ষিত তালিকা)</h3>
+        <table class="hist-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Head Name</th>
+                    <th>Memorial</th>
+                    <th>Union</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="historyBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<div id="pad">
+    <img id="p_watermark" src="" class="watermark">
+    <div style="text-align: center; font-weight: bold; font-size: 14pt;">Government of The Republic Of Bangladesh</div>
+    <div class="header-main">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/8/84/Government_Seal_of_Bangladesh.svg" style="width:65px;">
+        <div style="text-align: center;">
+            <h1 id="p_union_title" style="margin:0; color: #000080; font-size: 20pt; text-transform: uppercase;"></h1>
+            <p id="p_header_address" style="margin:5px 0; font-size: 11pt; font-weight: bold;"></p>
+        </div>
+        <div id="qrcode"></div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; margin: 15px 0; font-weight: bold; font-size: 11pt;">
+        <div>Memorial No: <span id="p_memorial"></span></div>
+        <div>Date: <span id="p_date"></span></div>
+    </div>
+
+    <div class="cert-title">Family Certificate</div>
+    <p style="font-size: 12pt; line-height: 1.6;">It is certified that the family of <b><span id="p_head"></span></b> consists of following members:</p>
+
+    <table class="warish-table">
+        <thead>
+            <tr>
+                <th>SI No</th>
+                <th>Name</th>
+                <th>Relationship</th>
+                <th>Date of Birth</th>
+                <th>Present Address</th>
+                <th>Permanent Address</th>
+            </tr>
+        </thead>
+        <tbody id="p_table_body"></tbody>
+    </table>
+
+    <p style="margin-top: 25px; font-size: 11pt; line-height: 1.6; text-align: justify;">
+        These family members are well-known to me. They are Bangladesh by birth. Their moral Characters are Good. They have good relations with each other. I wish them success in every sphere of their life.
+    </p>
+
+    <div style="margin-top: 70px; display: flex; justify-content: flex-end; text-align: center;">
+        <div>
+            ..................................................<br>
+            <b id="p_chairman" style="font-size: 12pt;"></b><br>
+            Chairman<br>
+            <span id="p_u_footer"></span> Union Parishad<br>
+            Itna, Kishoreganj.
+        </div>
+    </div>
+</div>
+
+<div class="no-print" id="printControls" style="text-align:center; margin-top: 30px; display:none;">
+    <button onclick="window.print()" style="padding:15px 40px; background:#1a73e8; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size: 16px;">🖨️ Print Now</button>
+    <button onclick="location.reload()" style="padding:15px 40px; background:#f44336; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size: 16px; margin-left:10px;">🔄 New Entry</button>
+</div>
+
+<script>
+    const unionLogos = {
+        "1 No Raytuti": "https://i.postimg.cc/SKR3qHLn/Untitled-6-copy-6.jpg",
+        "2 No Dhanpur": "https://i.postimg.cc/Pq7cqKKr/Untitled-6-copy-4.jpg",
+        "3 No Mriga": "https://i.postimg.cc/VNhTN44N/Untitled-6-copy-3.jpg",
+        "4 No Itna": "https://i.postimg.cc/pdS7dkkT/itana-i'una-ya-na-para-sada.jpg",
+        "5 No Boribari": "https://i.postimg.cc/7LhdDj1G/Untitled-6-copy-8.jpg",
+        "6 No Badla": "https://i.postimg.cc/k5Gz9LNB/Untitled-6-copy-9.jpg",
+        "7 No Elongjuri": "https://i.postimg.cc/KYjwFC7K/Untitled-6-copy-5.jpg",
+        "8 No Joysiddhi": "https://i.postimg.cc/hGGvn43G/Untitled-6-copy.jpg",
+        "9 No Chauganga": "https://i.postimg.cc/0N43NZZ9/Untitled-6-copy-7.jpg"
+    };
+
+    let historyData = JSON.parse(localStorage.getItem('family_cert_history') || '[]');
+    let currentEditId = null;
+    const relations = ["OWN", "Father", "Mother", "Husband", "Wife", "Son", "Daughter", "Brother", "Sister", "Nephew", "Niece"];
+
+    function addMemberRow(data = {}) {
+        const container = document.getElementById('memberContainer');
+        const div = document.createElement('div');
+        div.className = 'warish-row';
+        div.innerHTML = `
+            <div class="grid-3">
+                <div class="input-group"><label>Name</label><input type="text" class="w-name" value="${data.name || ''}"></div>
+                <div class="input-group">
+                    <label>Relationship</label>
+                    <select class="w-rel">
+                        ${relations.map(r => `<option value="${r}" ${data.rel === r ? 'selected' : ''}>${r}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="input-group"><label>DOB (DD/MM/YYYY)</label><input type="text" class="w-dob" value="${data.dob || ''}"></div>
+            </div>
+            <div class="grid-3" style="margin-top:5px;">
+                <div class="input-group"><label>Present Address</label><input type="text" class="w-present" value="${data.present || ''}"></div>
+                <div class="input-group"><label>Permanent Address</label><input type="text" class="w-permanent" value="${data.permanent || ''}"></div>
+                <button class="btn-del" style="height:40px; align-self:flex-end; margin-bottom:10px;" onclick="this.parentElement.parentElement.remove()">Remove</button>
+            </div>`;
+        container.appendChild(div);
+    }
+
+    function saveAndGenerate() {
+        const entry = {
+            id: currentEditId || Date.now(),
+            date: new Date().toLocaleDateString('en-GB'),
+            union: document.getElementById('unionSelect').value,
+            memorial: document.getElementById('memorialInput').value,
+            head: document.getElementById('headName').value,
+            members: Array.from(document.querySelectorAll('.warish-row')).map(row => ({
+                name: row.querySelector('.w-name').value,
+                rel: row.querySelector('.w-rel').value,
+                dob: row.querySelector('.w-dob').value,
+                present: row.querySelector('.w-present').value,
+                permanent: row.querySelector('.w-permanent').value
+            }))
+        };
+
+        if(!entry.head || !entry.memorial) return alert("Please fill Head Name and Memorial!");
+
+        const index = historyData.findIndex(h => h.id === currentEditId);
+        if(index > -1) historyData[index] = entry;
+        else historyData.push(entry);
+
+        localStorage.setItem('family_cert_history', JSON.stringify(historyData));
+        renderPrint(entry);
+    }
+
+    function renderPrint(data) {
+        const u = data.union.split('|');
+        const unionName = u[0];
+        
+        document.getElementById('p_union_title').innerText = unionName + " Union Parishad";
+        document.getElementById('p_header_address').innerText = "Post: " + u[2] + ", Upzilla: Itna, District: Kishoreganj";
+        document.getElementById('p_memorial').innerText = data.memorial;
+        document.getElementById('p_date').innerText = data.date;
+        document.getElementById('p_head').innerText = data.head;
+        document.getElementById('p_chairman').innerText = u[1];
+        document.getElementById('p_u_footer').innerText = unionName;
+        document.getElementById('p_watermark').src = unionLogos[unionName] || "";
+
+        let html = "";
+        data.members.forEach((m, i) => {
+            html += `<tr><td>${i+1}</td><td>${m.name}</td><td>${m.rel}</td><td>${m.dob}</td><td>${m.present}</td><td>${m.permanent}</td></tr>`;
+        });
+        document.getElementById('p_table_body').innerHTML = html;
+
+        document.getElementById("qrcode").innerHTML = "";
+        new QRCode(document.getElementById("qrcode"), { 
+            text: `Family Certificate\nHead: ${data.head}\nMemorial: ${data.memorial}\nUnion: ${unionName}`, 
+            width: 80, height: 80 
+        });
+
+        document.querySelector('.container').style.display = 'none';
+        document.getElementById('pad').style.display = 'block';
+        document.getElementById('printControls').style.display = 'block';
+    }
+
+    function updateHistoryTable() {
+        const body = document.getElementById('historyBody');
+        body.innerHTML = historyData.slice().reverse().map(h => `
+            <tr>
+                <td>${h.date}</td>
+                <td>${h.head}</td>
+                <td>${h.memorial}</td>
+                <td>${h.union.split('|')[0]}</td>
+                <td>
+                    <button class="btn-action btn-edit" onclick="editHistory(${h.id})">Edit</button>
+                    <button class="btn-action" style="background:#2196F3; color:white" onclick='renderPrint(${JSON.stringify(h)})'>View</button>
+                    <button class="btn-action btn-del" onclick="deleteHistory(${h.id})">Del</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function editHistory(id) {
+        const entry = historyData.find(h => h.id === id);
+        currentEditId = id;
+        document.getElementById('unionSelect').value = entry.union;
+        document.getElementById('memorialInput').value = entry.memorial;
+        document.getElementById('headName').value = entry.head;
+        document.getElementById('memberContainer').innerHTML = '';
+        entry.members.forEach(m => addMemberRow(m));
+        window.scrollTo(0, 0);
+    }
+
+    function deleteHistory(id) {
+        if(confirm('Delete this record?')) {
+            historyData = historyData.filter(h => h.id !== id);
+            localStorage.setItem('family_cert_history', JSON.stringify(historyData));
+            updateHistoryTable();
+        }
+    }
+
+    function downloadBackup() {
+        const blob = new Blob([JSON.stringify(historyData, null, 2)], {type: 'application/json'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `itna_history_backup_${new Date().toISOString().slice(0,10)}.json`;
+        a.click();
+    }
+
+    // Initial Load
+    updateHistoryTable();
+    addMemberRow();
+</script>
+</body>
+</html>

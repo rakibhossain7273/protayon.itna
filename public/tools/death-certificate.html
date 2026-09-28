@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <title>ডিজিটাল মৃত্যু সনদ - ইটনা উপজেলা</title>
+    <style>
+        @import url('https://fonts.cdnfonts.com/css/solaimanlipi');
+        :root { 
+            --border-dark: #000000; 
+            --primary-green: #006a4e; 
+            --navy: #000080; 
+        }
+        
+        body { font-family: 'SolaimanLipi', Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
+        
+        #pad { 
+            display: none; width: 210mm; min-height: 297mm; 
+            margin: 0 auto; padding: 10mm 12mm; 
+            border: 8px double var(--border-dark); 
+            background: #fff !important; 
+            position: relative; box-sizing: border-box; color: #000;
+        }
+        
+        .watermark { 
+            position: absolute; top: 50%; left: 50%; 
+            transform: translate(-50%, -50%); 
+            width: 480px; 
+            opacity: 0.08; 
+            z-index: 0; pointer-events: none;
+        }
+        
+        .header-top { display: grid; grid-template-columns: 100px 1fr 120px; align-items: center; text-align: center; position: relative; z-index: 1; }
+        .qr-top { width: 70px; height: 70px; }
+        .govt-seal img { width: 50px; }
+        .govt-seal h2 { font-size: 16px; margin: 2px 0; }
+        .union-logo { width: 85px; height: 85px; object-fit: contain; margin-left: auto; }
+
+        .header-main { text-align: center; border-bottom: 2px solid var(--primary-green); padding-bottom: 5px; margin-bottom: 10px; position: relative; z-index: 1; }
+        .header-main h1 { color: var(--navy); margin: 5px 0; font-size: 26px; }
+        .header-main p { margin: 2px 0; font-weight: bold; font-size: 14px; }
+
+        .meta-info { display: flex; justify-content: space-between; margin: 10px 0; font-weight: bold; font-size: 13px; border-bottom: none; }
+        
+        .cert-title { text-align: center; margin: 10px auto; border: 2px solid var(--border-dark); width: fit-content; padding: 3px 50px; border-radius: 20px; font-size: 20px; font-weight: bold; color: var(--navy); }
+
+        .content-area { position: relative; z-index: 1; width: 88%; margin-left: 10%; }
+        .sub-title { font-weight: bold; font-size: 15px; margin-bottom: 10px; text-decoration: underline; }
+        
+        .info-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        .info-table td { padding: 4px 5px; font-size: 13.5px; border-bottom: 1px dotted #e0e0e0; }
+        .label-cell { width: 32%; text-align: right; font-weight: bold; padding-right: 15px; }
+        .sep-cell { width: 3%; text-align: center; }
+        .val-cell { width: 65%; text-align: left; }
+
+        .desc-text { text-align: justify; line-height: 1.7; font-size: 13.5px; margin-top: 20px; }
+        .condolence { text-align: center; margin-top: 25px; font-weight: bold; font-size: 14px; }
+
+        .signature-area { margin-top: 100px; display: flex; justify-content: flex-end; padding-right: 30px; position: relative; z-index: 1; }
+        .sig-block { text-align: center; font-size: 13.5px; border-top: 1px solid #000; width: 220px; padding-top: 2px; line-height: 1.3; }
+
+        .qr-bottom-area { text-align: center; margin-top: 50px; position: relative; z-index: 1; }
+        .qr-bottom-area img { width: 90px; height: 90px; border: 1px solid #eee; }
+
+        .no-print { max-width: 900px; margin: 20px auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .full-width { grid-column: span 3; }
+        .input-group { display: flex; flex-direction: column; margin-bottom: 10px; }
+        label { font-weight: bold; font-size: 13px; margin-bottom: 4px; color: #444; }
+        input, select { padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; }
+        .addr-btn { background: #e8f0fe; color: #1a73e8; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; margin-bottom: 4px; display: inline-block; }
+        button.main-btn { background: var(--primary-green); color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 16px; margin-top: 15px; }
+        
+        /* History Styles */
+        .history-card { margin-top: 30px; border-top: 3px solid var(--primary-green); padding-top: 20px; }
+        .hist-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .hist-table th, .hist-table td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 13px; }
+        .hist-table th { background: #f8f9fa; }
+        .btn-action { padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; margin-right: 5px; color: white; }
+        .btn-view { background: #28a745; }
+        .btn-edit { background: #ffc107; color: black; }
+        .btn-del { background: #dc3545; }
+
+        @media print {
+            .no-print, #printTools, .history-card { display: none !important; }
+            #pad { display: block !important; margin: 0; width: 100%; border: 8px double #000 !important; }
+            body { background: white; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <h2 style="text-align:center; color: var(--primary-green);">🏛️ ডিজিটাল মৃত্যু সনদ জেনারেটর</h2>
+    <div class="grid-3">
+        <div class="input-group">
+            <label>ইউনিয়ন পরিষদ:</label>
+            <select id="unionSelect" onchange="updateAddr()">
+                <option value="">সিলেক্ট করুন</option>
+                <option value="১নং রায়টুটী|মোহাম্মদ এনামূল হক খান মিল্কী|রায়টুটী-২৩৯০|https://i.postimg.cc/SKR3qHLn/Untitled-6-copy-6.jpg">১নং রায়টুটী</option>
+                <option value="২নং ধনপুর|প্রদীপ কুমার দাস|ধনপুর-২৩৯০|https://i.postimg.cc/Pq7cqKKr/Untitled-6-copy-4.jpg">২নং ধনপুর</option>
+                <option value="৩নং মৃগা|মোঃ দারুল ইসলাম|মৃগা-২৩৯০|https://i.postimg.cc/VNhTN44N/Untitled-6-copy-3.jpg">৩নং মৃগা</option>
+                <option value="৪নং ইটনা|মোঃ সোহাগ মিয়া|ইটনা-২৩৯০|https://i.postimg.cc/pdS7dkkT/itana-i'una-ya-na-para-sada.jpg">৪নং ইটনা</option>
+                <option value="৫নং বড়িবাড়ি|আঃ ছাত্তার|বাদলা-২৩১০|https://i.postimg.cc/7LhdDj1G/Untitled-6-copy-8.jpg">৫নং বড়িবাড়ি</option>
+                <option value="৬নং বাদলা|আদিলুজ্জামান ভূঞা|বাদলা-২৩১০|https://i.postimg.cc/k5Gz9LNB/Untitled-6-copy-9.jpg">৬নং বাদলা</option>
+                <option value="৭নং এলংজুরী|রুবেল মিয়া|এলংজুরী-২৩৯০|https://i.postimg.cc/KYjwFC7K/Untitled-6-copy-5.jpg">৭নং এলংজুরী</option>
+                <option value="৮নং জয়সিদ্ধি|মোঃ মনির উদ্দিন|জয়সিদ্ধি-২৩৯০|https://i.postimg.cc/hGGvn43G/Untitled-6-copy.jpg">৮নং জয়সিদ্ধি</option>
+                <option value="৯নং চৌগাংগা|সাইফুল ইসলাম|চৌগাংগা-২৩৯০|https://i.postimg.cc/0N43NZZ9/Untitled-6-copy-7.jpg">৯নং চৌগাংগা</option>
+            </select>
+        </div>
+        <div class="input-group"><label>ওয়ার্ড নং:</label><select id="wardIn" onchange="updateAddr()"><option value="১">১</option><option value="২">২</option><option value="৩">৩</option><option value="৪">৪</option><option value="৫">৫</option><option value="৬">৬</option><option value="৭">৭</option><option value="৮">৮</option><option value="৯">৯</option></select></div>
+        <div class="input-group"><label>গ্রাম:</label><input type="text" id="villageIn" placeholder="গ্রামের নাম" onkeyup="updateAddr()"></div>
+
+        <div class="input-group"><label>মৃতের নাম:</label><input type="text" id="m_name"></div>
+        <div class="input-group"><label>লিঙ্গ:</label><select id="m_gender"><option>পুরুষ</option><option>মহিলা</option></select></div>
+        <div class="input-group">
+            <label>ধর্ম:</label>
+            <select id="m_religion">
+                <option>ইসলাম</option>
+                <option>হিন্দু</option>
+                <option>খ্রিস্টান</option>
+                <option>বৌদ্ধ</option>
+                <option>অন্যান্য</option>
+            </select>
+        </div>
+        <div class="input-group"><label>বৈবাহিক অবস্থা:</label><select id="m_status"><option>বিবাহিত</option><option>অবিবাহিত</option><option>বিপত্নীক/বিধবা</option></select></div>
+        <div class="input-group"><label>পিতার নাম:</label><input type="text" id="m_father"></div>
+        <div class="input-group"><label>মাতার নাম:</label><input type="text" id="m_mother"></div>
+        <div class="input-group"><label>স্বামী/স্ত্রীর নাম:</label><input type="text" id="m_spouse"></div>
+        <div class="input-group"><label>মৃত্যুর তারিখ:</label><input type="text" id="m_date" placeholder="১৬ ফেব্রুয়ারি ২০২৬"></div>
+        <div class="input-group"><label>মৃত্যুর সময়:</label><input type="text" id="m_time" placeholder="সকাল ১০:৩০ মিনিট"></div>
+        <div class="input-group"><label>মৃত্যুর কারণ:</label><input type="text" id="m_cause" value="স্বাভাবিক"></div>
+        <div class="input-group full-width"><label>বর্তমান ঠিকানা:</label><input type="text" id="presAddr"></div>
+        <div class="input-group full-width"><div class="addr-btn" onclick="copyAddr()">স্থায়ী ঠিকানা একই করুন</div><label>স্থায়ী ঠিকানা:</label><input type="text" id="permAddr"></div>
+        <div class="input-group"><label>আবেদনকারীর নাম:</label><input type="text" id="app_name"></div>
+        <div class="input-group" style="grid-column: span 2;"><label>আবেদনকারীর পিতার নাম:</label><input type="text" id="app_father"></div>
+    </div>
+    <button class="main-btn" onclick="generate()">সনদ জেনারেট করুন</button>
+
+    <div class="history-card">
+        <h3 style="text-align:center; color: var(--navy);">📋 ইস্যুকৃত সনদের ইতিহাস</h3>
+        <table class="hist-table">
+            <thead>
+                <tr>
+                    <th>স্মারক নং</th>
+                    <th>মৃতের নাম</th>
+                    <th>ইউনিয়ন</th>
+                    <th>অ্যাকশন</th>
+                </tr>
+            </thead>
+            <tbody id="historyList"></tbody>
+        </table>
+    </div>
+</div>
+
+<div id="pad">
+    <img src="https://images.seeklogo.com/logo-png/19/2/bangladesh-govt-logo-png_seeklogo-196441.png" class="watermark">
+    
+    <div class="header-top">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=verified" class="qr-top">
+        <div class="govt-seal">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/8/84/Government_Seal_of_Bangladesh.svg">
+            <h2>গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</h2>
+        </div>
+        <img id="p_union_logo" class="union-logo">
+    </div>
+
+    <div class="header-main">
+        <h1 id="p_union_title"></h1>
+        <p>উপজেলা: ইটনা, জেলা: কিশোরগঞ্জ।</p>
+        <p style="color:red; font-size: 11px;">"স্মার্ট ইউনিয়ন, স্মার্ট সেবা"</p>
+    </div>
+
+    <div class="meta-info">
+        <div>স্মারক নং: <span id="p_sarok"></span></div>
+        <div>তারিখ: <span id="p_today"></span></div>
+    </div>
+
+    <div class="cert-title">মৃত্যু সনদ</div>
+
+    <div class="content-area">
+        <div class="sub-title">মৃত্যুবরণকারী ব্যক্তির বিবরণ:</div>
+        <table class="info-table">
+            <tr><td class="label-cell">নাম</td><td class="sep-cell">:</td><td class="val-cell" id="d_name"></td></tr>
+            <tr><td class="label-cell">লিঙ্গ ও ধর্ম</td><td class="sep-cell">:</td><td class="val-cell" id="d_gender_rel"></td></tr>
+            <tr><td class="label-cell">বৈবাহিক অবস্থা</td><td class="sep-cell">:</td><td class="val-cell" id="d_status"></td></tr>
+            <tr><td class="label-cell">পিতার নাম</td><td class="sep-cell">:</td><td class="val-cell" id="d_father"></td></tr>
+            <tr><td class="label-cell">মাতার নাম</td><td class="sep-cell">:</td><td class="val-cell" id="d_mother"></td></tr>
+            <tr><td class="label-cell">স্বামী/স্ত্রীর নাম</td><td class="sep-cell">:</td><td class="val-cell" id="d_spouse"></td></tr>
+            <tr><td class="label-cell">বর্তমান ঠিকানা</td><td class="sep-cell">:</td><td class="val-cell" id="d_pres"></td></tr>
+            <tr><td class="label-cell">স্থায়ী ঠিকানা</td><td class="sep-cell">:</td><td class="val-cell" id="d_perm"></td></tr>
+            <tr><td class="label-cell">মৃত্যুর তারিখ ও সময়</td><td class="sep-cell">:</td><td class="val-cell" id="d_datetime"></td></tr>
+            <tr><td class="label-cell">মৃত্যুর কারণ</td><td class="sep-cell">:</td><td class="val-cell" id="d_cause"></td></tr>
+        </table>
+
+        <div class="desc-text" id="p_desc"></div>
+        <div class="condolence" id="p_condo"></div>
+
+        <div class="signature-area">
+            <div class="sig-block">
+                <b><span id="p_chairman"></span></b><br>
+                চেয়ারম্যান<br>
+                <span id="p_union_footer"></span><br>
+                ইটনা, কিশোরগঞ্জ।
+            </div>
+        </div>
+    </div>
+
+    <div class="qr-bottom-area">
+        <img id="p_qr_main" src="">
+    </div>
+</div>
+
+<div id="printTools" style="display:none; text-align:center; margin-bottom: 50px;">
+    <button onclick="window.print()" style="padding:12px 40px; background:#1a73e8; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">🖨️ প্রিন্ট করুন</button>
+    <button onclick="backToForm()" style="padding:12px 20px; background:#666; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold; margin-left:10px;">⬅️ ব্যাকে যান</button>
+</div>
+
+<script>
+    function toBnNum(n) {
+        const bn = {'0':'০','1':'১','2':'২','3':'৩','4':'৪','5':'৫','6':'৬','7':'৭','8':'৮','9':'৯'};
+        return n.toString().replace(/[0-9]/g, s => bn[s]);
+    }
+
+    function updateAddr() {
+        const val = document.getElementById('unionSelect').value.split('|');
+        if(val.length > 1) {
+            const village = document.getElementById('villageIn').value || "...";
+            const ward = document.getElementById('wardIn').value;
+            document.getElementById('presAddr').value = `গ্রাম: ${village}, ওয়ার্ড নং: ${toBnNum(ward)}, ডাকঘর: ${val[2]}, থানা: ইটনা, জেলা: কিশোরগঞ্জ।`;
+        }
+    }
+
+    function copyAddr() { document.getElementById('permAddr').value = document.getElementById('presAddr').value; }
+
+    // --- History & Storage Logic ---
+    window.onload = function() { renderHistory(); };
+
+    function generate() {
+        const val = document.getElementById('unionSelect').value.split('|');
+        if(!val[0]) { alert("ইউনিয়ন সিলেক্ট করুন"); return; }
+        
+        const deceased = document.getElementById('m_name').value;
+        const appN = document.getElementById('app_name').value;
+        const appF = document.getElementById('app_father').value;
+        const uName = val[0] + " ইউনিয়ন পরিষদ";
+        
+        // Fill Certificate View
+        document.getElementById('d_name').innerText = deceased;
+        document.getElementById('d_gender_rel').innerText = document.getElementById('m_gender').value + ", ধর্ম: " + document.getElementById('m_religion').value;
+        document.getElementById('d_status').innerText = document.getElementById('m_status').value;
+        document.getElementById('d_father').innerText = document.getElementById('m_father').value;
+        document.getElementById('d_mother').innerText = document.getElementById('m_mother').value;
+        document.getElementById('d_spouse').innerText = document.getElementById('m_spouse').value || "প্রযোজ্য নহে";
+        document.getElementById('d_pres').innerText = document.getElementById('presAddr').value;
+        document.getElementById('d_perm').innerText = document.getElementById('permAddr').value;
+        document.getElementById('d_datetime').innerText = document.getElementById('m_date').value + ", " + document.getElementById('m_time').value;
+        document.getElementById('d_cause').innerText = document.getElementById('m_cause').value;
+        
+        document.getElementById('p_desc').innerHTML = `এই মর্মে মৃত্যু সনদ প্রদান করা যাচ্ছে যে, আবেদনকারী <b>${appN}</b>, পিতা: <b>${appF}</b> এর আবেদনের প্রেক্ষিতে নিশ্চিত হওয়া গেল যে, <b>${deceased}</b> অত্র ইউনিয়নের একজন স্থায়ী বাসিন্দা ছিলেন এবং তিনি উল্লিখিত তারিখে মৃত্যুবরণ করেন। তাঁর মৃত্যুর তথ্য অত্র কার্যালয়ের মৃত্যু নিবন্ধন রেজিস্টারে লিপিবদ্ধ আছে।`;
+        
+        let condoText = `“আমি মৃত ${deceased}-এর বিদেহী আত্মার শান্তি ও মাগফেরাত কামনা করছি।”`;
+        document.getElementById('p_condo').innerText = condoText;
+        
+        document.getElementById('p_union_title').innerText = uName + " কার্যালয়";
+        document.getElementById('p_union_footer').innerText = uName;
+        document.getElementById('p_chairman').innerText = val[1];
+        document.getElementById('p_union_logo').src = val[3];
+        
+        // Generate Sarok and Date
+        const currentSarok = toBnNum("৪৬.০০.৪৯০৮.৫২৭." + Math.floor(100 + Math.random() * 900));
+        document.getElementById('p_sarok').innerText = currentSarok;
+        document.getElementById('p_today').innerText = toBnNum(new Date().toLocaleDateString('en-GB'));
+        
+        const qrData = encodeURIComponent(`সনদ যাচাই: ${uName}। মৃত: ${deceased}, আবেদনকারী: ${appN}।`);
+        document.getElementById('p_qr_main').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrData}`;
+        
+        // Save to LocalStorage
+        saveRecord(currentSarok);
+
+        // UI Toggle
+        document.querySelector('.no-print').style.display = 'none';
+        document.getElementById('pad').style.display = 'block';
+        document.getElementById('printTools').style.display = 'block';
+    }
+
+    function saveRecord(sarok) {
+        const record = {
+            id: Date.now(),
+            sarok: sarok,
+            unionVal: document.getElementById('unionSelect').value,
+            ward: document.getElementById('wardIn').value,
+            village: document.getElementById('villageIn').value,
+            m_name: document.getElementById('m_name').value,
+            m_gender: document.getElementById('m_gender').value,
+            m_religion: document.getElementById('m_religion').value,
+            m_status: document.getElementById('m_status').value,
+            m_father: document.getElementById('m_father').value,
+            m_mother: document.getElementById('m_mother').value,
+            m_spouse: document.getElementById('m_spouse').value,
+            m_date: document.getElementById('m_date').value,
+            m_time: document.getElementById('m_time').value,
+            m_cause: document.getElementById('m_cause').value,
+            presAddr: document.getElementById('presAddr').value,
+            permAddr: document.getElementById('permAddr').value,
+            app_name: document.getElementById('app_name').value,
+            app_father: document.getElementById('app_father').value
+        };
+
+        let history = JSON.parse(localStorage.getItem('death_history')) || [];
+        // Update if exists, else add
+        const idx = history.findIndex(h => h.m_name === record.m_name && h.m_father === record.m_father);
+        if(idx > -1) history[idx] = record;
+        else history.push(record);
+        
+        localStorage.setItem('death_history', JSON.stringify(history));
+        renderHistory();
+    }
+
+    function renderHistory() {
+        const history = JSON.parse(localStorage.getItem('death_history')) || [];
+        const list = document.getElementById('historyList');
+        list.innerHTML = "";
+
+        if(history.length === 0) {
+            list.innerHTML = "<tr><td colspan='4' style='text-align:center;'>কোন তথ্য নেই</td></tr>";
+            return;
+        }
+
+        history.reverse().forEach(item => {
+            const u = item.unionVal.split('|')[0];
+            list.innerHTML += `
+                <tr>
+                    <td>${item.sarok}</td>
+                    <td><b>${item.m_name}</b></td>
+                    <td>${u}</td>
+                    <td>
+                        <button class="btn-action btn-view" onclick='reGenerate(${JSON.stringify(item)})'>ডাউনলোড</button>
+                        <button class="btn-action btn-edit" onclick='editRecord(${JSON.stringify(item)})'>সংশোধন</button>
+                        <button class="btn-action btn-del" onclick='deleteRecord(${item.id})'>বাতিল</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    function reGenerate(item) {
+        fillInputs(item);
+        generate();
+    }
+
+    function editRecord(item) {
+        fillInputs(item);
+        window.scrollTo(0,0);
+        alert("তথ্য সংশোধনের জন্য লোড করা হয়েছে। পরিবর্তন শেষে পুনরায় জেনারেট করুন।");
+    }
+
+    function deleteRecord(id) {
+        if(confirm("আপনি কি এই সনদটি বাতিল করতে চান?")) {
+            let history = JSON.parse(localStorage.getItem('death_history')) || [];
+            history = history.filter(h => h.id !== id);
+            localStorage.setItem('death_history', JSON.stringify(history));
+            renderHistory();
+        }
+    }
+
+    function fillInputs(item) {
+        document.getElementById('unionSelect').value = item.unionVal;
+        document.getElementById('wardIn').value = item.ward;
+        document.getElementById('villageIn').value = item.village;
+        document.getElementById('m_name').value = item.m_name;
+        document.getElementById('m_gender').value = item.m_gender;
+        document.getElementById('m_religion').value = item.m_religion;
+        document.getElementById('m_status').value = item.m_status;
+        document.getElementById('m_father').value = item.m_father;
+        document.getElementById('m_mother').value = item.m_mother;
+        document.getElementById('m_spouse').value = item.m_spouse;
+        document.getElementById('m_date').value = item.m_date;
+        document.getElementById('m_time').value = item.m_time;
+        document.getElementById('m_cause').value = item.m_cause;
+        document.getElementById('presAddr').value = item.presAddr;
+        document.getElementById('permAddr').value = item.permAddr;
+        document.getElementById('app_name').value = item.app_name;
+        document.getElementById('app_father').value = item.app_father;
+    }
+
+    function backToForm() {
+        document.querySelector('.no-print').style.display = 'block';
+        document.getElementById('pad').style.display = 'none';
+        document.getElementById('printTools').style.display = 'none';
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <title>একই ব্যক্তির প্রত্যয়নপত্র - ইটনা উপজেলা</title>
+    <style>
+        @import url('https://fonts.cdnfonts.com/css/solaimanlipi');
+        :root { 
+            --border-dark: #000000; 
+            --primary-green: #006a4e; 
+            --navy: #000080; 
+        }
+        
+        body { font-family: 'SolaimanLipi', Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
+        
+        #pad { 
+            display: none; width: 210mm; min-height: 297mm; 
+            margin: 0 auto; padding: 10mm 12mm; 
+            border: 8px double var(--border-dark); 
+            background: #fff !important; 
+            position: relative; box-sizing: border-box; color: #000;
+        }
+        
+        .watermark { 
+            position: absolute; top: 50%; left: 50%; 
+            transform: translate(-50%, -50%); 
+            width: 480px; 
+            opacity: 0.08; 
+            z-index: 0; pointer-events: none;
+        }
+        
+        .header-top { display: grid; grid-template-columns: 100px 1fr 120px; align-items: center; text-align: center; position: relative; z-index: 1; }
+        .qr-top { width: 70px; height: 70px; }
+        .govt-seal img { width: 50px; }
+        .govt-seal h2 { font-size: 16px; margin: 2px 0; }
+        .union-logo { width: 85px; height: 85px; object-fit: contain; margin-left: auto; }
+
+        .header-main { text-align: center; border-bottom: 2px solid var(--primary-green); padding-bottom: 5px; margin-bottom: 10px; position: relative; z-index: 1; }
+        .header-main h1 { color: var(--navy); margin: 5px 0; font-size: 26px; }
+        .header-main p { margin: 2px 0; font-weight: bold; font-size: 14px; }
+
+        .meta-info { display: flex; justify-content: space-between; margin: 10px 0; font-weight: bold; font-size: 13px; }
+        
+        .cert-title { text-align: center; margin: 15px auto; border: 2px solid var(--border-dark); width: fit-content; padding: 3px 50px; border-radius: 20px; font-size: 20px; font-weight: bold; color: var(--navy); }
+
+        .content-area { position: relative; z-index: 1; width: 88%; margin-left: 10%; }
+        .sub-title { font-weight: bold; font-size: 15px; margin-bottom: 10px; text-decoration: underline; }
+        
+        .info-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        .info-table td { padding: 5px 5px; font-size: 14.5px; border-bottom: 1px dotted #e0e0e0; }
+        .label-cell { width: 35%; text-align: right; font-weight: bold; padding-right: 15px; }
+        .sep-cell { width: 5%; text-align: center; }
+        .val-cell { width: 60%; text-align: left; }
+
+        .desc-text { text-align: justify; line-height: 1.8; font-size: 15px; margin-top: 20px; }
+
+        .signature-area { margin-top: 60px; display: flex; justify-content: flex-end; padding-right: 30px; position: relative; z-index: 1; }
+        .sig-block { text-align: center; font-size: 14px; border-top: 1px solid #000; width: 220px; padding-top: 2px; line-height: 1.3; }
+
+        .qr-bottom-area { text-align: center; margin-top: 40px; position: relative; z-index: 1; }
+        .qr-bottom-area img { width: 100px; height: 100px; border: 1px solid #eee; padding: 5px; background: #fff; }
+
+        .no-print { max-width: 900px; margin: 20px auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .full-width { grid-column: span 3; }
+        .input-group { display: flex; flex-direction: column; margin-bottom: 10px; }
+        
+        .dynamic-input-group { display: none; background: #fff9e6; border-left: 3px solid #ffb300; padding: 2px 8px; border-radius: 4px; }
+        
+        label { font-weight: bold; font-size: 13px; margin-bottom: 4px; color: #444; }
+        input, select { padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; outline: none; }
+        button.main-btn { background: var(--primary-green); color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 16px; margin-top: 15px; }
+        
+        .checkbox-container { display: flex; gap: 20px; flex-wrap: wrap; background: #edf2f7; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid var(--primary-green); }
+        .checkbox-item { display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 14px; cursor: pointer; color: #333; }
+        .checkbox-item input { width: 18px; height: 18px; cursor: pointer; }
+
+        .history-card { margin-top: 30px; border-top: 3px solid var(--primary-green); padding-top: 20px; }
+        .hist-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .hist-table th, .hist-table td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 13px; }
+        .hist-table th { background: #f8f9fa; }
+        .btn-action { padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; margin-right: 5px; color: white; }
+        .btn-del { background: #dc3545; }
+
+        @media print {
+            .no-print, #printTools, .history-card { display: none !important; }
+            #pad { display: block !important; margin: 0; width: 100%; border: 8px double #000 !important; }
+            body { background: white; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <h2 style="text-align:center; color: var(--primary-green);">📝 একই ব্যক্তির প্রত্যয়নপত্র জেনারেটর</h2>
+    
+    <label style="font-weight: bold; font-size: 14px; color: var(--primary-green); display: block; margin-bottom: 5px;">⚠️ কোন কোন নামে সমস্যা রয়েছে টিক চিহ্ন (✔) দিন:</label>
+    <div class="checkbox-container">
+        <label class="checkbox-item"><input type="checkbox" id="chk_own" onchange="toggleFields()" checked> নিজের নাম</label>
+        <label class="checkbox-item"><input type="checkbox" id="chk_father" onchange="toggleFields()"> পিতার নাম</label>
+        <label class="checkbox-item"><input type="checkbox" id="chk_mother" onchange="toggleFields()"> মাতার নাম</label>
+        <label class="checkbox-item"><input type="checkbox" id="chk_husband" onchange="toggleFields()"> স্বামী/স্ত্রীর নাম</label>
+    </div>
+
+    <div class="grid-3">
+        <div class="input-group">
+            <label>ইউনিয়ন পরিষদ:</label>
+            <select id="unionSelect" onchange="updateAddr()">
+                <option value="">সিলেক্ট করুন</option>
+                <option value="১নং রায়টুটী|মোহাম্মদ এনামূল হক খান মিল্কী|রায়টুটী-২৩৯০|https://i.postimg.cc/SKR3qHLn/Untitled-6-copy-6.jpg">১নং রায়টুটী</option>
+                <option value="২নং ধনপুর|প্রদীপ কুমার দাস|ধনপুর-২৩৯০|https://i.postimg.cc/Pq7cqKKr/Untitled-6-copy-4.jpg">২নং ধনপুর</option>
+                <option value="৩নং মৃগা|মোঃ দারুল ইসলাম|মৃগা-২৩৯০|https://i.postimg.cc/VNhTN44N/Untitled-6-copy-3.jpg">৩নং মৃগা</option>
+                <option value="৪নং ইটনা|মোঃ সোহাগ মিয়া|ইটনা-২৩৯০|https://i.postimg.cc/pdS7dkkT/itana-i'una-ya-na-para-sada.jpg">৪নং ইটনা</option>
+                <option value="৫নং বড়িবাড়ি|আঃ ছাত্তার|বাদলা-২৩১০|https://i.postimg.cc/7LhdDj1G/Untitled-6-copy-8.jpg">৫নং বড়িবাড়ি</option>
+                <option value="৬নং বাদলা|আদিলুজ্জামান ভূঞা|বাদলা-২৩১০|https://i.postimg.cc/k5Gz9LNB/Untitled-6-copy-9.jpg">৬নং বাদলা</option>
+                <option value="৭নং এলংজুরী|রুবেল মিয়া|এলংজুরী-২৩৯০|https://i.postimg.cc/KYjwFC7K/Untitled-6-copy-5.jpg">৭নং এলংজুরী</option>
+                <option value="৮নং জয়সিদ্ধি|মোঃ মনির উদ্দিন|জয়সিদ্ধি-২৩৯০|https://i.postimg.cc/hGGvn43G/Untitled-6-copy.jpg">৮নং জয়সিদ্ধি</option>
+                <option value="৯নং চৌগাংগা|সাইফুল ইসলাম|চৌগাংগা-২৩৯০|https://i.postimg.cc/0N43NZZ9/Untitled-6-copy-7.jpg">৯নং চৌগাংগা</option>
+            </select>
+        </div>
+        
+        <!-- মূল নামসমূহ (সঠিক রূপ) -->
+        <div class="input-group"><label>আবেদনকারীর নাম (সঠিক রূপ):</label><input type="text" id="v_name_1" placeholder="উদা: মোঃ আব্দুর রহিম"></div>
+        <div class="input-group dynamic-input-group" id="box_own_2"><label style="color:#b78103;">আবেদনকারীর নাম (NID/ভুল রূপ):</label><input type="text" id="v_name_2" placeholder="উদা: আব্দুর রহিম"></div>
+        
+        <div class="input-group"><label>পিতার নাম (সঠিক রূপ):</label><input type="text" id="v_father_1"></div>
+        <div class="input-group dynamic-input-group" id="box_father_2"><label style="color:#b78103;">পিতার নাম (NID/ভুল রূপ):</label><input type="text" id="v_father_2" placeholder="উদা: ভুল বানানের নাম"></div>
+        
+        <div class="input-group"><label>মাতার নাম (সঠিক রূপ):</label><input type="text" id="v_mother_1"></div>
+        <div class="input-group dynamic-input-group" id="box_mother_2"><label style="color:#b78103;">মাতার নাম (NID/ভুল রূপ):</label><input type="text" id="v_mother_2" placeholder="উদা: ভুল বানানের নাম"></div>
+        
+        <div class="input-group"><label>স্বামী/স্ত্রীর নাম (সঠিক রূপ):</label><input type="text" id="v_husband_1" placeholder="উদা: কামাল মিয়া / রহিমা বেগম"></div>
+        <div class="input-group dynamic-input-group" id="box_husband_2"><label style="color:#b78103;">স্বামী/স্ত্রীর নাম (NID/ভুল রূপ):</label><input type="text" id="v_husband_2" placeholder="উদা: ভুল বানানের নাম"></div>
+        
+        <div class="input-group"><label>এনআইডি/জন্ম নিবন্ধন নং:</label><input type="text" id="v_reg_num"></div>
+        <div class="input-group"><label>ওয়ার্ড নং:</label><input type="text" id="v_ward" onkeyup="updateAddr()"></div>
+        <div class="input-group"><label>গ্রাম:</label><input type="text" id="v_village" onkeyup="updateAddr()"></div>
+        <div class="input-group"><label>ডাকঘর:</label><input type="text" id="v_po" readonly></div>
+        
+        <div class="input-group full-width"><label>পূর্ণাঙ্গ ঠিকানা:</label><input type="text" id="presAddr"></div>
+    </div>
+    <button class="main-btn" onclick="generate()">প্রত্যয়নপত্র জেনারেট করুন</button>
+
+    <div class="history-card">
+        <h3 style="text-align:center; color: var(--navy);">📋 ইস্যুকৃত প্রত্যয়নপত্রের ইতিহাস</h3>
+        <table class="hist-table">
+            <thead>
+                <tr>
+                    <th>স্মারক নং</th>
+                    <th>ব্যক্তির নাম</th>
+                    <th>ইউনিয়ন</th>
+                    <th>অ্যাকশন</th>
+                </tr>
+            </thead>
+            <tbody id="historyList"></tbody>
+        </table>
+    </div>
+</div>
+
+<div id="pad">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/8/84/Government_Seal_of_Bangladesh.svg" class="watermark">
+    <div class="header-top">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=Verified_Document" class="qr-top">
+        <div class="govt-seal">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/8/84/Government_Seal_of_Bangladesh.svg">
+            <h2>গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</h2>
+        </div>
+        <img id="p_union_logo" class="union-logo">
+    </div>
+
+    <div class="header-main">
+        <h1 id="p_union_title"></h1>
+        <p>উপজেলা: ইটনা, জেলা: কিশোরগঞ্জ।</p>
+        <p style="color:red; font-size: 11px;">"স্মার্ট ইউনিয়ন, স্মার্ট সেবা"</p>
+    </div>
+
+    <div class="meta-info">
+        <div>স্মারক নং: <span id="p_sarok"></span></div>
+        <div>তারিখ: <span id="p_today"></span></div>
+    </div>
+
+    <div class="cert-title">একই ব্যক্তির প্রত্যয়নপত্র</div>
+
+    <div class="content-area">
+        <div class="sub-title">আবেদনকারীর বিবরণ:</div>
+        <table class="info-table">
+            <tr><td class="label-cell">আবেদনকারীর নাম</td><td class="sep-cell">:</td><td class="val-cell"><b><span id="d_name"></span></b></td></tr>
+            <tr><td class="label-cell">পিতার নাম</td><td class="sep-cell">:</td><td class="val-cell"><span id="d_father"></span></td></tr>
+            <tr><td class="label-cell">মাতার নাম</td><td class="sep-cell">:</td><td class="val-cell"><span id="d_mother"></span></td></tr>
+            <tr id="row_husband" style="display:none;"><td class="label-cell">স্বামী/স্ত্রীর নাম</td><td class="sep-cell">:</td><td class="val-cell"><span id="d_husband"></span></td></tr>
+            <tr><td class="label-cell">এনআইডি/জন্ম নিবন্ধন</td><td class="sep-cell">:</td><td class="val-cell"><span id="d_reg"></span></td></tr>
+            <tr><td class="label-cell">স্থায়ী ঠিকানা</td><td class="sep-cell">:</td><td class="val-cell"><span id="d_addr"></span></td></tr>
+        </table>
+
+        <!-- ডায়নামিক বিবরণী লেখা -->
+        <div class="desc-text" id="dynamicDesc"></div>
+
+        <div class="signature-area">
+            <div class="sig-block">
+                <b><span id="p_chairman"></span></b><br>
+                চেয়ারম্যান<br>
+                <span id="p_union_footer"></span><br>
+                ইটনা, কিশোরগঞ্জ।
+            </div>
+        </div>
+    </div>
+
+    <div class="qr-bottom-area">
+        <img id="p_qr_main" src="">
+        <p style="font-size: 10px; margin-top: 5px;">ডিজিটাল ভেরিফিকেশন কোড</p>
+    </div>
+</div>
+
+<div id="printTools" style="display:none; text-align:center; margin-bottom: 50px;">
+    <button onclick="window.print()" style="padding:12px 40px; background:#1a73e8; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">🖨️ প্রিন্ট করুন</button>
+    <button onclick="backToForm()" style="padding:12px 20px; background:#666; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold; margin-left:10px;">⬅️ ব্যাকে যান</button>
+</div>
+
+<script>
+    function toggleFields() {
+        document.getElementById('box_own_2').style.display = document.getElementById('chk_own').checked ? 'flex' : 'none';
+        document.getElementById('box_father_2').style.display = document.getElementById('chk_father').checked ? 'flex' : 'none';
+        document.getElementById('box_mother_2').style.display = document.getElementById('chk_mother').checked ? 'flex' : 'none';
+        document.getElementById('box_husband_2').style.display = document.getElementById('chk_husband').checked ? 'flex' : 'none';
+    }
+
+    window.onload = function() { 
+        toggleFields(); 
+        renderHistory(); 
+    };
+
+    function toBnNum(n) {
+        if(!n) return "";
+        const bn = {'0':'০','1':'১','2':'২','3':'৩','4':'৪','5':'৫','6':'৬','7':'৭','8':'৮','9':'৯','/':'/','-':'-'};
+        return n.toString().replace(/[0-9]/g, s => bn[s]);
+    }
+
+    function updateAddr() {
+        const val = document.getElementById('unionSelect').value.split('|');
+        if(val.length > 1) {
+            const po = val[2];
+            document.getElementById('v_po').value = po;
+            const village = document.getElementById('v_village').value || "...";
+            const ward = document.getElementById('v_ward').value || "...";
+            document.getElementById('presAddr').value = `গ্রাম: ${village}, ওয়ার্ড নং: ${toBnNum(ward)}, ডাকঘর: ${po}, থানা: ইটনা, জেলা: কিশোরগঞ্জ।`;
+        }
+    }
+
+    function generate() {
+        const val = document.getElementById('unionSelect').value.split('|');
+        if(!val[0]) { alert("ইউনিয়ন সিলেক্ট করুন"); return; }
+        
+        const n1 = document.getElementById('v_name_1').value;
+        const n2 = document.getElementById('v_name_2').value;
+        const f1 = document.getElementById('v_father_1').value;
+        const f2 = document.getElementById('v_father_2').value;
+        const m1 = document.getElementById('v_mother_1').value;
+        const m2 = document.getElementById('v_mother_2').value;
+        const h1 = document.getElementById('v_husband_1').value;
+        const h2 = document.getElementById('v_husband_2').value;
+        
+        const address = document.getElementById('presAddr').value;
+        const regNum = document.getElementById('v_reg_num').value;
+        const unionName = val[0] + " ইউনিয়ন পরিষদ";
+        const chairman = val[1];
+
+        const chkOwn = document.getElementById('chk_own').checked;
+        const chkFather = document.getElementById('chk_father').checked;
+        const chkMother = document.getElementById('chk_mother').checked;
+        const chkHusband = document.getElementById('chk_husband').checked;
+
+        if(!chkOwn && !chkFather && !chkMother && !chkHusband) {
+            alert("অনুগ্রহ করে অন্তত একটি অপশনে টিক চিহ্ন দিন।");
+            return;
+        }
+
+        // টেবিলে নামের পাশে (প্রকাশ: ২য় নাম) লেখার লজিক
+        document.getElementById('d_name').innerHTML = chkOwn && n2 ? `<b>${n1}</b> (প্রকাশ: ${n2})` : `<b>${n1}</b>`;
+        document.getElementById('d_father').innerHTML = chkFather && f2 ? `${f1} (প্রকাশ: ${f2})` : f1;
+        document.getElementById('d_mother').innerHTML = chkMother && m2 ? `${m1} (প্রকাশ: ${m2})` : m1;
+        
+        if(h1) {
+            document.getElementById('row_husband').style.display = '';
+            document.getElementById('d_husband').innerHTML = chkHusband && h2 ? `${h1} (প্রকাশ: ${h2})` : h1;
+        } else {
+            document.getElementById('row_husband').style.display = 'none';
+        }
+
+        document.getElementById('d_reg').innerText = toBnNum(regNum);
+        document.getElementById('d_addr').innerText = address;
+        document.getElementById('p_union_title').innerText = unionName + " কার্যালয়";
+        document.getElementById('p_union_footer').innerText = unionName;
+        document.getElementById('p_chairman').innerText = chairman;
+        document.getElementById('p_union_logo').src = val[3];
+        
+        const currentSarok = toBnNum("ইউপ/ইট/প্রত্যয়ন/২০২৬/" + Math.floor(1000 + Math.random() * 9000));
+        document.getElementById('p_sarok').innerText = currentSarok;
+        const today = toBnNum(new Date().toLocaleDateString('en-GB'));
+        document.getElementById('p_today').innerText = today;
+
+        // --- একদম খাঁটি বাংলা বিবরণী জেনারেটর ---
+        let descriptionIssues = [];
+
+        if(chkOwn && n1 && n2) {
+            descriptionIssues.push(`জাতীয় পরিচয়পত্র/জন্ম নিবন্ধনে তাঁর নিজের নাম <b>"${n2}"</b> উল্লেখ থাকলেও, প্রকৃতপক্ষে তাঁর সঠিক ও শুদ্ধ নাম হলো <b>"${n1}"</b>`);
+        }
+        if(chkFather && f1 && f2) {
+            descriptionIssues.push(`জাতীয় পরিচয়পত্র/জন্ম নিবন্ধনে তাঁর পিতার নাম <b>"${f2}"</b> উল্লেখ থাকলেও, প্রকৃতপক্ষে তাঁর পিতার সঠিক ও শুদ্ধ নাম হলো <b>"${f1}"</b>`);
+        }
+        if(chkMother && m1 && m2) {
+            descriptionIssues.push(`জাতীয় পরিচয়পত্র/জন্ম নিবন্ধনে তাঁর মাতার নাম <b>"${m2}"</b> উল্লেখ থাকলেও, প্রকৃতপক্ষে তাঁর মাতার সঠিক ও শুদ্ধ নাম হলো <b>"${m1}"</b>`);
+        }
+        if(chkHusband && h1 && h2) {
+            descriptionIssues.push(`জাতীয় পরিচয়পত্র/জন্ম নিবন্ধনে তাঁর স্বামী/স্ত্রীর নাম <b>"${h2}"</b> উল্লেখ থাকলেও, প্রকৃতপক্ষে তাঁর স্বামী/স্ত্রীর সঠিক ও শুদ্ধ নাম হলো <b>"${h1}"</b>`);
+        }
+
+        let finalIssueStatement = descriptionIssues.join(' এবং ');
+
+        // 'ডেসক্রিপশনে' এর জায়গায় 'বিবরণীতে' এবং 'এক ও অভিন্ন' এর জায়গায় 'একই ব্যক্তি'
+        const fullDescText = `এই মর্মে প্রত্যয়ন করা যাচ্ছে যে, উপরে বর্ণিত ব্যক্তি অত্র ইউনিয়নের একজন স্থায়ী বাসিন্দা এবং জন্মসূত্রে বাংলাদেশের নাগরিক। আবেদনকারীর দাখিলকৃত কাগজপত্র ও ব্যক্তিগত তথ্য পুঙ্খানুপুঙ্খভাবে পর্যালোচনা করে দেখা যায় যে, ${finalIssueStatement}। উভয় নামধারী ব্যক্তি মূলত <b>একই ব্যক্তি</b>। বিবরণীতে উল্লেখিত ভুল নামসমূহ সংশোধনপূর্বক সঠিক নামটি সকল দাপ্তরিক ও আইনগত কাজে ব্যবহারের জন্য প্রত্যয়ন করা হলো।<br><br>
+        আমি তাঁর সর্বাঙ্গীণ সাফল্য ও মঙ্গল কামনা করছি।`;
+        
+        document.getElementById('dynamicDesc').innerHTML = fullDescText;
+        
+        // QR Code
+        const qrInfo = `ডিজিটাল প্রত্যয়নপত্র ভেরিফিকেশন\n---------------------------\nপরিষদ: ${unionName}\nস্মারক নং: ${currentSarok}\nআবেদনকারী: ${n1}\nঅবস্থা: চেয়ারম্যান কর্তৃক যাচাইকৃত ও অনুমোদিত।`;
+        document.getElementById('p_qr_main').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrInfo)}`;
+        
+        saveRecord(currentSarok);
+
+        document.querySelector('.no-print').style.display = 'none';
+        document.getElementById('pad').style.display = 'block';
+        document.getElementById('printTools').style.display = 'block';
+    }
+
+    function saveRecord(sarok) {
+        const record = {
+            id: Date.now(),
+            sarok: sarok,
+            unionVal: document.getElementById('unionSelect').value,
+            v_name: document.getElementById('v_name_1').value
+        };
+        let history = JSON.parse(localStorage.getItem('same_person_list')) || [];
+        history.push(record);
+        localStorage.setItem('same_person_list', JSON.stringify(history));
+        renderHistory();
+    }
+
+    function renderHistory() {
+        const history = JSON.parse(localStorage.getItem('same_person_list')) || [];
+        const list = document.getElementById('historyList');
+        list.innerHTML = "";
+        history.slice().reverse().forEach(item => {
+            const u = item.unionVal.split('|')[0];
+            list.innerHTML += `<tr><td>${item.sarok}</td><td><b>${item.v_name}</b></td><td>${u}</td><td><button class="btn-action btn-del" onclick='deleteRecord(${item.id})'>মুছুন</button></td></tr>`;
+        });
+    }
+
+    function deleteRecord(id) {
+        if(confirm("মুছে ফেলবেন?")) {
+            let history = JSON.parse(localStorage.getItem('same_person_list')) || [];
+            history = history.filter(h => h.id !== id);
+            localStorage.setItem('same_person_list', JSON.stringify(history));
+            renderHistory();
+        }
+    }
+
+    function backToForm() {
+        document.querySelector('.no-print').style.display = 'block';
+        document.getElementById('pad').style.display = 'none';
+        document.getElementById('printTools').style.display = 'none';
+    }
+</script>
+</body>
+</html>

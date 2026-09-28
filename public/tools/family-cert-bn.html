@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <title>পারিবারিক সনদ প্রস্তুতকারক - ইটনা</title>
+    <style>
+        :root { 
+            --bd-green: #006a4e; 
+            --gold: #b8860b; 
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --input-border: #cccccc;
+        }
+
+        body { 
+            font-family: 'SolaimanLipi', Arial, sans-serif; 
+            background: var(--bg-color); 
+            color: var(--text-color);
+            margin: 0; padding: 20px; 
+        }
+        
+        .container { max-width: 1000px; margin: auto; background: var(--card-bg); padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .setup-box { background: rgba(0,0,0,0.02); padding: 20px; border: 1px solid var(--input-border); border-radius: 12px; margin-bottom: 20px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; align-items: end; }
+        .input-group { display: flex; flex-direction: column; margin-bottom: 12px; }
+        label { font-weight: bold; font-size: 13px; margin-bottom: 6px; }
+        select, input { padding: 10px; border: 1px solid var(--input-border); border-radius: 8px; background: var(--card-bg); color: var(--text-color); font-family: inherit; }
+
+        .member-row { background: rgba(0, 106, 78, 0.05); padding: 15px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #ddd; position: relative; }
+        .btn-add { background: var(--bd-green); color: white; padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        .btn-remove { background: #d93025; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+
+        /* প্যাড ডিজাইন */
+        #pad { display: none; width: 210mm; min-height: 297mm; margin: 20px auto; padding: 15mm 15mm; border: 10px double var(--bd-green); background: #fff !important; position: relative; box-sizing: border-box; color: #000; }
+        .inner-border { border: 2px solid var(--gold); height: 100%; padding: 15px; box-sizing: border-box; min-height: 260mm; position: relative;}
+        
+        .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 450px; opacity: 0.08; z-index: 0; pointer-events: none; }
+        .header-main { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px double var(--bd-green); padding-bottom: 10px; position: relative; z-index: 1; }
+        .header-logo { width: 85px; height: 85px; object-fit: contain; }
+        .cert-title { text-align: center; margin: 25px auto; background: var(--bd-green); color: white; width: fit-content; padding: 8px 50px; border-radius: 50px; font-size: 22px; font-weight: bold; }
+        
+        .family-table { width: 100%; border-collapse: collapse; margin-top: 20px; position: relative; z-index: 1; }
+        .family-table th, .family-table td { border: 1px solid black; padding: 8px; text-align: center; font-size: 11pt; }
+        .family-table th { background: #f2f2f2; }
+
+        .no-print { display: block; }
+        @media print {
+            .no-print { display: none !important; }
+            #pad { display: block !important; margin: 0; border: none !important; }
+            body { background: white; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container no-print">
+    <h2 style="text-align:center; color: var(--bd-green);">🏠 পারিবারিক সনদ প্রস্তুতকারক (ইটনা)</h2>
+
+    <div class="setup-box">
+        <h4>১. ইউনিয়ন ও ঠিকানা তথ্য</h4>
+        <div class="grid-3">
+            <div class="input-group">
+                <label>ইউনিয়ন নির্বাচন করুন</label>
+                <select id="unionSelect" onchange="updatePostOffice()">
+                    <option value="">সিলেক্ট করুন</option>
+                    <option value="১নং রায়টুটী|মোহাম্মদ এনামূল হক খান মিল্কী|রায়টুটী-২৩৯০">১নং রায়টুটী</option>
+                    <option value="২নং ধনপুর|প্রদীপ কুমার দাস|ধনপুর-২৩৯০">২নং ধনপুর</option>
+                    <option value="৩নং মৃগা|মোঃ দারুল ইসলাম|মৃগা-২৩৯০">৩নং মৃগা</option>
+                    <option value="৪নং ইটনা|মোঃ সোহাগ মিয়া|ইটনা-২৩৯০">৪নং ইটনা</option>
+                    <option value="৫নং বড়িবাড়ি|আঃ ছাত্তার|বাদলা-২৩১০">৫নং বড়িবাড়ি</option>
+                    <option value="৬নং বাদলা|আদিলুজ্জামান ভূঞা|বাদলা-২৩১০">৬নং বাদলা</option>
+                    <option value="৭নং এলংজুরী|রুবেল মিয়া|এলংজুরী-২৩৯০">৭নং এলংজুরী</option>
+                    <option value="৮নং জয়সিদ্ধি|মোঃ মনির উদ্দিন|জয়সিদ্ধি-২৩৯০">৮নং জয়সিদ্ধি</option>
+                    <option value="৯নং চৌগাংগা|সাইফুল ইসলাম|চৌগাংগা-২৩৯০">৯নং চৌগাংগা</option>
+                </select>
+            </div>
+            <div class="input-group"><label>ডাকঘর:</label><input type="text" id="postInput"></div>
+            <div class="input-group"><label>গ্রাম/মহল্লা:</label><input type="text" id="village"></div>
+            <div class="input-group"><label>ওয়ার্ড নং:</label><input type="number" id="ward"></div>
+            <div class="input-group"><label>স্মারক নং:</label><input type="text" id="sarokInput" value="ইঃউঃপঃ/২০২৫/"></div>
+        </div>
+    </div>
+
+    <div class="setup-box">
+        <h4>২. পরিবার প্রধানের তথ্য</h4>
+        <div class="grid-3">
+            <div class="input-group"><label>পরিবার প্রধানের নাম:</label><input type="text" id="headName" placeholder="উদা: মোঃ আব্দুল হাই"></div>
+            <div class="input-group"><label>পিতা/স্বামীর নাম:</label><input type="text" id="headFather"></div>
+            <div class="input-group"><label>মাতার নাম:</label><input type="text" id="headMother"></div>
+        </div>
+    </div>
+
+    <div class="setup-box">
+        <h4>৩. পরিবারের সদস্যদের তালিকা</h4>
+        <div id="memberContainer">
+            <div class="member-row">
+                <div class="grid-4">
+                    <div class="input-group"><label>সদস্যের নাম</label><input type="text" class="m-name"></div>
+                    <div class="input-group"><label>সম্পর্ক</label><input type="text" class="m-rel" placeholder="উদা: নিজ/স্ত্রী/পুত্র"></div>
+                    <div class="input-group"><label>পরিচয়পত্র নং (NID/BRN)</label><input type="text" class="m-id"></div>
+                    <div class="input-group"><label>জন্ম তারিখ/বয়স</label><input type="text" class="m-dob"></div>
+                </div>
+            </div>
+        </div>
+        <button class="btn-add" onclick="addMemberRow()">+ আরো সদস্য যোগ করুন</button>
+    </div>
+
+    <button onclick="generateCert()" style="width:100%; padding:18px; background:var(--bd-green); color:white; border:none; border-radius:10px; font-size:18px; cursor:pointer; font-weight:bold; transition: 0.3s;">পারিবারিক সনদ তৈরি করুন</button>
+</div>
+
+<div id="pad">
+    <div class="inner-border">
+        <img id="p_watermark" src="" class="watermark">
+        <div style="text-align: center; font-weight: bold; font-size: 16pt; color: #ff0000; margin-bottom: 5px;">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</div>
+        
+        <div class="header-main">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/8/84/Government_Seal_of_Bangladesh.svg" style="width:70px;">
+            <div style="text-align: center; flex-grow: 1;">
+                <h1 id="p_union_title" style="margin:0; color: #006a4e; font-size: 22pt;">ইউনিয়ন পরিষদ</h1>
+                <p id="p_header_address" style="margin:5px 0; font-weight:bold; font-size: 11pt;"></p>
+                <p style="margin:0; font-weight: bold;">উপজেলা: ইটনা, জেলা: কিশোরগঞ্জ।</p>
+            </div>
+            <img id="p_logo_right" src="" class="header-logo">
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin: 15px 0; font-weight: bold; font-size: 12pt;">
+            <div>স্মারক নং: <span id="p_sarok"></span></div>
+            <div>তারিখ: <span id="p_date"></span></div>
+        </div>
+
+        <div class="cert-title">পারিবারিক সনদপত্র</div>
+
+        <div id="p_body" style="line-height: 1.8; text-align: justify; font-size: 13pt; text-indent: 50px; margin-bottom: 15px;"></div>
+
+        <table class="family-table">
+            <thead>
+                <tr>
+                    <th width="8%">ক্র নং</th>
+                    <th width="30%">সদস্যের নাম</th>
+                    <th width="15%">সম্পর্ক</th>
+                    <th width="25%">পরিচয়পত্র নং</th>
+                    <th width="22%">জন্ম তারিখ/বয়স</th>
+                </tr>
+            </thead>
+            <tbody id="p_table_body"></tbody>
+        </table>
+
+        <p style="margin-top: 25px; font-size: 13pt; line-height: 1.6;">
+            উল্লিখিত সদস্যগণ অত্র ইউনিয়নের স্থায়ী বাসিন্দা এবং তারা জন্মসূত্রে বাংলাদেশের নাগরিক। আমার জানামতে তাদের নৈতিক চরিত্র ভালো। আমি তাদের সর্বাঙ্গীণ উন্নতি ও মঙ্গল কামনা করি।
+        </p>
+
+        <div style="margin-top: 80px; display: flex; justify-content: flex-end; text-align: center;">
+            <div style="min-width: 250px;">
+                ..................................................<br>
+                <b><span id="p_chairman"></span></b><br>
+                চেয়ারম্যান<br>
+                <span id="p_footer_union"></span> ইউনিয়ন পরিষদ<br>
+                ইটনা, কিশোরগঞ্জ।
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="no-print" id="printControls" style="text-align:center; margin-top: 20px; display:none; padding-bottom: 40px;">
+    <button onclick="window.print()" style="padding:15px 40px; background:#1a73e8; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold; margin-right:10px; font-size: 16px;">🖨️ প্রিন্ট করুন</button>
+    <button onclick="location.reload()" style="padding:15px 40px; background:#d93025; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size: 16px;">🔄 নতুন সনদ</button>
+</div>
+
+<script>
+    const unionLogos = {
+        "১নং রায়টুটী": "https://i.postimg.cc/SKR3qHLn/Untitled-6-copy-6.jpg",
+        "২নং ধনপুর": "https://i.postimg.cc/Pq7cqKKr/Untitled-6-copy-4.jpg",
+        "৩নং মৃগা": "https://i.postimg.cc/VNhTN44N/Untitled-6-copy-3.jpg",
+        "৪নং ইটনা": "https://i.postimg.cc/pdS7dkkT/itana-i'una-ya-na-para-sada.jpg",
+        "৫নং বড়িবাড়ি": "https://i.postimg.cc/7LhdDj1G/Untitled-6-copy-8.jpg",
+        "৬নং বাদলা": "https://i.postimg.cc/k5Gz9LNB/Untitled-6-copy-9.jpg",
+        "৭নং এলংজুরী": "https://i.postimg.cc/KYjwFC7K/Untitled-6-copy-5.jpg",
+        "৮নং জয়সিদ্ধি": "https://i.postimg.cc/hGGvn43G/Untitled-6-copy.jpg",
+        "৯নং চৌগাংগা": "https://i.postimg.cc/0N43NZZ9/Untitled-6-copy-7.jpg"
+    };
+
+    function updatePostOffice() {
+        const val = document.getElementById('unionSelect').value;
+        if(val) {
+            const data = val.split('|');
+            document.getElementById('postInput').value = data[2].split('-')[0];
+        }
+    }
+
+    function addMemberRow() {
+        const container = document.getElementById('memberContainer');
+        const div = document.createElement('div');
+        div.className = 'member-row';
+        div.innerHTML = `
+            <button class="btn-remove" onclick="this.parentElement.remove()" style="position:absolute; top:5px; right:5px;">×</button>
+            <div class="grid-4">
+                <div class="input-group"><label>সদস্যের নাম</label><input type="text" class="m-name"></div>
+                <div class="input-group"><label>সম্পর্ক</label><input type="text" class="m-rel"></div>
+                <div class="input-group"><label>পরিচয়পত্র নং (NID/BRN)</label><input type="text" class="m-id"></div>
+                <div class="input-group"><label>জন্ম তারিখ/বয়স</label><input type="text" class="m-dob"></div>
+            </div>
+        `;
+        container.appendChild(div);
+    }
+
+    function toBnNum(n) {
+        if(!n) return "";
+        const bn = {'0':'০','1':'১','2':'২','3':'৩','4':'৪','5':'৫','6':'৬','7':'৭','8':'৮','9':'৯','-':'-','/':'/'};
+        return n.toString().replace(/[0-9\-\/]/g, s => bn[s] || s);
+    }
+
+    function generateCert() {
+        const uVal = document.getElementById('unionSelect').value;
+        const head = document.getElementById('headName').value;
+        if(!uVal || !head) return alert("দয়া করে ইউনিয়ন এবং পরিবার প্রধানের নাম লিখুন!");
+        
+        const u = uVal.split('|');
+        const unionName = u[0];
+
+        // লোগো ও ওয়াটারমার্ক সেটআপ
+        const lUrl = unionLogos[unionName] || "";
+        document.getElementById('p_logo_right').src = lUrl;
+        document.getElementById('p_watermark').src = lUrl;
+
+        document.getElementById('p_union_title').innerText = unionName + " ইউনিয়ন পরিষদ";
+        document.getElementById('p_header_address').innerText = "ডাকঘর: " + document.getElementById('postInput').value;
+        document.getElementById('p_sarok').innerText = toBnNum(document.getElementById('sarokInput').value);
+        document.getElementById('p_date').innerText = toBnNum(new Date().toLocaleDateString('en-GB'));
+        document.getElementById('p_chairman').innerText = u[1];
+        document.getElementById('p_footer_union').innerText = unionName;
+
+        // বর্ণনা অংশ
+        document.getElementById('p_body').innerHTML = `এই মর্মে প্রত্যয়ন করা যাইতেছে যে, জনাব/বেগম <b>${head}</b>, পিতা/স্বামী: <b>${document.getElementById('headFather').value}</b>, মাতা: <b>${document.getElementById('headMother').value}</b>, গ্রাম: <b>${document.getElementById('village').value}</b>, ওয়ার্ড নং: <b>${toBnNum(document.getElementById('ward').value)}</b>, ডাকঘর: <b>${document.getElementById('postInput').value}</b>, উপজেলা: ইটনা, জেলা: কিশোরগঞ্জ। তাহার পারিবারিক সদস্যগণের তালিকা নিম্নরূপ:`;
+
+        // টেবিল ডাটা
+        const rows = document.querySelectorAll('.member-row');
+        let tableHtml = "";
+        rows.forEach((row, index) => {
+            const name = row.querySelector('.m-name').value;
+            if(name) {
+                tableHtml += `<tr>
+                    <td>${toBnNum(index + 1)}</td>
+                    <td style="text-align:left; padding-left:15px;">${name}</td>
+                    <td>${row.querySelector('.m-rel').value}</td>
+                    <td>${toBnNum(row.querySelector('.m-id').value)}</td>
+                    <td>${toBnNum(row.querySelector('.m-dob').value)}</td>
+                </tr>`;
+            }
+        });
+        document.getElementById('p_table_body').innerHTML = tableHtml;
+
+        // ভিউ পরিবর্তন
+        document.querySelector('.container').style.display = 'none';
+        document.getElementById('pad').style.display = 'block';
+        document.getElementById('printControls').style.display = 'block';
+        window.scrollTo(0,0);
+    }
+</script>
+</body>
+</html>
